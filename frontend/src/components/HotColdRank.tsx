@@ -1,54 +1,101 @@
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import type { HotColdResponse } from '../types'
-import { TabGroup, Tab } from '../styles/shared'
-import { FullscreenCard } from './FullscreenCard'
-import { HotColdGrid, HotTitle, ColdTitle, RankRow, RankNum, RankBarBg, RankBar, RankCount } from '../styles/HotColdStyles'
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { HotColdResponse } from '../types';
+import { TabGroup, Tab } from '../styles/shared';
+import { FullscreenCard } from './FullscreenCard';
+import { useDebounce } from '../hooks/useDebounce';
+import {
+  HotColdGrid,
+  HotTitle,
+  ColdTitle,
+  RankRow,
+  RankNum,
+  RankBarBg,
+  RankBar,
+  RankCount,
+} from '../styles/HotColdStyles';
 
 interface Props {
-  data: HotColdResponse
-  period: number
-  onPeriodChange: (v: number) => void
+  data: HotColdResponse;
+  period: number;
+  onPeriodChange: (v: number) => void;
 }
 
 export function HotColdRank({ data, period, onPeriodChange }: Props) {
-  const { t } = useTranslation()
-  const [zone, setZone] = useState<'front' | 'back'>('front')
-  const items = zone === 'front' ? data.front : data.back
+  const { t } = useTranslation();
+  const [zone, setZone] = useState<'front' | 'back'>('front');
+  const [inputValue, setInputValue] = useState(String(period));
+  const debouncedValue = useDebounce(inputValue, 300);
 
-  const hot = items.slice(0, 10)
-  const cold = [...items].reverse().slice(0, 10)
+  useEffect(() => {
+    const n = parseInt(debouncedValue, 10);
+    if (!isNaN(n) && n >= 1 && n !== period) {
+      onPeriodChange(n);
+    }
+  }, [debouncedValue, onPeriodChange, period]);
 
-  const maxCount = items[0]?.count ?? 1
+  const items = zone === 'front' ? data.front : data.back;
+
+  const hot = items.slice(0, 10);
+  const cold = [...items].reverse().slice(0, 10);
+
+  const maxCount = items[0]?.count ?? 1;
 
   const controls = (
     <TabGroup>
-      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>{t('hotCold.front')}</Tab>
-      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>{t('hotCold.back')}</Tab>
-      <span style={{ marginLeft: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#666' }}>{t('hotCold.recent')}</span>
+      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>
+        {t('hotCold.front')}
+      </Tab>
+      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>
+        {t('hotCold.back')}
+      </Tab>
+      <span
+        style={{
+          marginLeft: 12,
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span style={{ fontSize: 13, color: '#666' }}>
+          {t('hotCold.recent')}
+        </span>
         <input
-          type="number"
+          type='number'
           min={1}
-          value={period}
-          onChange={e => onPeriodChange(Math.max(1, Number(e.target.value)))}
-          style={{ width: 60, padding: '4px 8px', border: '1px solid #ddd', borderRadius: 4, fontSize: 13 }}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          style={{
+            width: 60,
+            padding: '4px 8px',
+            border: '1px solid #ddd',
+            borderRadius: 4,
+            fontSize: 13,
+          }}
         />
-        <span style={{ fontSize: 13, color: '#666' }}>{t('hotCold.draws')}</span>
+        <span style={{ fontSize: 13, color: '#666' }}>
+          {t('hotCold.draws')}
+        </span>
       </span>
     </TabGroup>
-  )
+  );
 
   return (
-    <FullscreenCard title={t('hotCold.title', { period: data.period })} controls={controls}>
+    <FullscreenCard
+      title={t('hotCold.title', { period: data.period })}
+      controls={controls}
+    >
       <HotColdGrid>
         <div>
           <HotTitle>{t('hotCold.hotTop10')}</HotTitle>
-          {hot.map(item => (
+          {hot.map((item) => (
             <RankRow key={item.number}>
               <RankNum>{String(item.number).padStart(2, '0')}</RankNum>
               <RankBarBg>
-                <RankBar $variant="hot" style={{ width: `${(item.count / maxCount) * 100}%` }} />
+                <RankBar
+                  $variant='hot'
+                  style={{ width: `${(item.count / maxCount) * 100}%` }}
+                />
               </RankBarBg>
               <RankCount>{item.count}</RankCount>
             </RankRow>
@@ -56,11 +103,14 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
         </div>
         <div>
           <ColdTitle>{t('hotCold.coldTop10')}</ColdTitle>
-          {cold.map(item => (
+          {cold.map((item) => (
             <RankRow key={item.number}>
               <RankNum>{String(item.number).padStart(2, '0')}</RankNum>
               <RankBarBg>
-                <RankBar $variant="cold" style={{ width: `${(item.count / maxCount) * 100}%` }} />
+                <RankBar
+                  $variant='cold'
+                  style={{ width: `${(item.count / maxCount) * 100}%` }}
+                />
               </RankBarBg>
               <RankCount>{item.count}</RankCount>
             </RankRow>
@@ -68,5 +118,5 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
         </div>
       </HotColdGrid>
     </FullscreenCard>
-  )
+  );
 }

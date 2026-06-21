@@ -124,10 +124,6 @@ function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectPro
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setQuery(value)
-  }, [value])
-
-  useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
