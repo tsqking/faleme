@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { CheckResult } from '../types'
 
 export function NumberSearch() {
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState('02 06 19 28 32 05 12')
   const [result, setResult] = useState<CheckResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
+
+  useEffect(() => {
+    handleSearch()
+  }, [])
 
   const handleSearch = async () => {
     const trimmed = input.trim()

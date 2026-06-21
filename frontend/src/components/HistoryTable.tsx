@@ -16,9 +16,9 @@ export function HistoryTable({ data, onPageChange }: Props) {
         <table className="history-table">
           <thead>
             <tr>
-              <th>期号</th>
-              <th colSpan={5}>前区号码</th>
-              <th colSpan={2}>后区号码</th>
+              <th className="season-th">期号</th>
+              <th colSpan={5} className="front-th">前区号码</th>
+              <th colSpan={2} className="back-th">后区号码</th>
             </tr>
           </thead>
           <tbody>

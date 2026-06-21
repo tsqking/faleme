@@ -40,6 +40,8 @@ function App() {
         <h1>大乐透数据看板</h1>
       </header>
 
+      <NumberSearch />
+
       {frequency && <StatsCards data={frequency} />}
 
       <div className="charts-row">
@@ -50,10 +52,6 @@ function App() {
       <div className="charts-row">
         {hotCold && <HotColdRank data={hotCold} />}
         {history && <HistoryTable data={history} onPageChange={setPage} />}
-      </div>
-
-      <div className="charts-row">
-        <NumberSearch />
       </div>
     </div>
   )

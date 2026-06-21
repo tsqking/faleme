@@ -189,14 +189,18 @@ body {
 .history-table th {
   background: #f8f9fa;
   padding: 10px 8px;
-  text-align: center;
+  text-align: left;
   font-weight: 600;
   border-bottom: 2px solid #eee;
 }
 
+.history-table th.back-th {
+  padding-left: 16px;
+}
+
 .history-table td {
   padding: 8px 6px;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -267,6 +271,10 @@ body {
 .total-label {
   font-size: 13px;
   color: #999;
+}
+
+.search-section {
+  margin-bottom: 24px;
 }
 
 .search-section h3 {
