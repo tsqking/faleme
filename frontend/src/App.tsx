@@ -25,10 +25,7 @@ const AppHeader = styled.header`
   }
 `
 
-const ChartsRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+const FullRow = styled.div`
   margin-bottom: 24px;
 `
 
@@ -60,15 +57,10 @@ function App() {
 
             {frequency && <StatsCards data={frequency} latestDraw={history?.items[0]} />}
 
-            <ChartsRow>
-              {trend && <TrendChart data={trend} />}
-              {frequency && <FrequencyChart data={frequency} />}
-            </ChartsRow>
-
-            <ChartsRow>
-              {hotCold && <HotColdRank data={hotCold} />}
-              {history && <HistoryTable data={history} onPageChange={setPage} />}
-            </ChartsRow>
+            <FullRow>{history && <HistoryTable data={history} onPageChange={setPage} />}</FullRow>
+            <FullRow>{trend && <TrendChart data={trend} />}</FullRow>
+            <FullRow>{frequency && <FrequencyChart data={frequency} />}</FullRow>
+            <FullRow>{hotCold && <HotColdRank data={hotCold} />}</FullRow>
           </>
         )}
       </AppContainer>
