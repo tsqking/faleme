@@ -91,7 +91,7 @@ const NumBtn = styled.button<{ $sel?: boolean; $zone: string }>`
 
 const Actions = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
 `
 
@@ -108,6 +108,16 @@ const CfmBtn = styled.button`
     opacity: 0.4;
     cursor: not-allowed;
   }
+`
+
+const ClrBtn = styled.button`
+  padding: 6px 14px;
+  background: #fff;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
 `
 
 const CclBtn = styled.button`
@@ -181,6 +191,11 @@ export function NumberSearch() {
     })
   }
 
+  const clear = () => {
+    setTf([])
+    setTb([])
+  }
+
   const confirm = () => {
     setFront(tf)
     setBack(tb)
@@ -195,7 +210,7 @@ export function NumberSearch() {
   }
 
   const handleOpen = (v: boolean) => {
-    if (v) { setTf(front); setTb(back) }
+    if (v) { setTf(front); setTb(back); setResult(null); setErr(null) }
     setOpen(v)
   }
 
@@ -222,8 +237,11 @@ export function NumberSearch() {
         ))}
       </Grid>
       <Actions>
-        <CclBtn onClick={cancel}>取消</CclBtn>
-        <CfmBtn disabled={!ready} onClick={confirm}>确认查询</CfmBtn>
+        <ClrBtn onClick={clear}>清除</ClrBtn>
+        <span style={{ display: 'flex', gap: 8 }}>
+          <CclBtn onClick={cancel}>取消</CclBtn>
+          <CfmBtn disabled={!ready} onClick={confirm}>确认查询</CfmBtn>
+        </span>
       </Actions>
     </PopContent>
   )
