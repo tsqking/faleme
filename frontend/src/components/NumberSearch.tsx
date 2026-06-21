@@ -1,17 +1,42 @@
 import { useState, useEffect } from 'react'
+import styled from 'styled-components'
 import type { CheckResult } from '../types'
-import { ChartSection } from '../styles/shared'
-import {
-  SearchInputRow, SearchInput, SearchButton, SearchBalls, SearchBall,
-  SearchError, SearchResult, ResultTitle, ResultMatches, MatchItem,
-} from '../styles/NumberSearchStyles'
+import { SearchInput, SearchButton, SearchBalls, SearchBall } from '../styles/NumberSearchStyles'
+
+const SearchRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+`
+
+const InputGroup = styled.div`
+  flex: 0 0 50%;
+  display: flex;
+  gap: 8px;
+  min-width: 200px;
+`
+
+const CompactResult = styled.span<{ $hit: boolean }>`
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: ${p => p.$hit ? '#e8f5e9' : '#fff3e0'};
+  border: 1px solid ${p => p.$hit ? '#a5d6a7' : '#ffcc80'};
+  white-space: nowrap;
+`
+
+const SearchError = styled.span`
+  color: #e74c3c;
+  font-size: 12px;
+`
 
 export function NumberSearch() {
   const [input, setInput] = useState('02 06 19 28 32 05 12')
   const [result, setResult] = useState<CheckResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [searched, setSearched] = useState(false)
 
   useEffect(() => {
     handleSearch()
@@ -23,7 +48,6 @@ export function NumberSearch() {
 
     setLoading(true)
     setError(null)
-    setSearched(true)
 
     try {
       const r = await fetch(`/api/check?numbers=${encodeURIComponent(trimmed)}`)
@@ -44,22 +68,20 @@ export function NumberSearch() {
   const parts = input.trim().split(/\s+/).filter(Boolean)
 
   return (
-    <ChartSection style={{ marginBottom: 24 }}>
-      <h3>号码查询</h3>
-      <SearchInputRow>
+    <SearchRow>
+      <InputGroup>
         <SearchInput
           placeholder="输入7个号码，空格分隔，如 02 06 19 28 32 05 12"
           value={input}
-          onChange={e => setInput(e.target.value)}
+          onChange={e => { setInput(e.target.value); setResult(null); setError(null) }}
           onKeyDown={handleKeyDown}
         />
         <SearchButton onClick={handleSearch} disabled={loading}>
           {loading ? '查询中...' : '查询'}
         </SearchButton>
-      </SearchInputRow>
-
+      </InputGroup>
       {parts.length > 0 && (
-        <SearchBalls>
+        <SearchBalls style={{ marginBottom: 0 }}>
           {parts.slice(0, 5).map((n, i) => (
             <SearchBall key={i} $zone="front" $size={+n >= 25 ? 'big' : +n >= 15 ? 'mid' : 'small'}>
               {n.padStart(2, '0')}
@@ -70,28 +92,14 @@ export function NumberSearch() {
           ))}
         </SearchBalls>
       )}
-
       {error && <SearchError>{error}</SearchError>}
-
-      {searched && !loading && result && (
-        <SearchResult $hit={result.matched}>
-          {result.matched ? (
-            <div>
-              <ResultTitle>🎉 该号码曾经中过一等奖！</ResultTitle>
-              <ResultMatches>
-                共中奖 <strong>{result.total_matches}</strong> 次，分别为：
-                {result.matches.map(m => (
-                  <MatchItem key={m.season}>
-                    第 <strong>{m.season}</strong> 期 — {m.number}
-                  </MatchItem>
-                ))}
-              </ResultMatches>
-            </div>
-          ) : (
-            <ResultTitle>😅 该号码从未中过一等奖，继续坚守！</ResultTitle>
-          )}
-        </SearchResult>
+      {!loading && result && (
+        <CompactResult $hit={result.matched}>
+          {result.matched
+            ? `中过 ${result.total_matches} 次 — ${result.matches.map(m => m.season).join(', ')}`
+            : '该号码从未中过一等奖'}
+        </CompactResult>
       )}
-    </ChartSection>
+    </SearchRow>
   )
 }
