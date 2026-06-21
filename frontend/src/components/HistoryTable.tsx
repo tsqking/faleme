@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import type { HistoryResponse } from '../types'
-import { ChartSection, ChartHeader, TotalLabel, Pagination } from '../styles/shared'
+import { TotalLabel, Pagination } from '../styles/shared'
+import { FullscreenCard } from './FullscreenCard'
 import { TableWrapper, HistoryTableStyle } from '../styles/HistoryTableStyles'
 
 interface Props {
@@ -10,11 +11,7 @@ interface Props {
 
 export function HistoryTable({ data, onPageChange }: Props) {
   return (
-    <ChartSection>
-      <ChartHeader>
-        <h3>开奖历史</h3>
-        <TotalLabel>共 {data.total} 期</TotalLabel>
-      </ChartHeader>
+    <FullscreenCard title="开奖历史" controls={<TotalLabel>共 {data.total} 期</TotalLabel>}>
       <TableWrapper>
         <HistoryTableStyle>
           <thead>
@@ -52,7 +49,7 @@ export function HistoryTable({ data, onPageChange }: Props) {
         <span>第 {data.page} / {data.total_pages} 页</span>
         <button disabled={data.page >= data.total_pages} onClick={() => onPageChange(data.page + 1)}>下一页</button>
       </Pagination>
-    </ChartSection>
+    </FullscreenCard>
   )
 }
 

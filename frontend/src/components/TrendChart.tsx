@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import type { TrendResponse } from '../types'
-import { ChartSection, ChartHeader, TabGroup, Tab } from '../styles/shared'
+import { TabGroup, Tab } from '../styles/shared'
+import { FullscreenCard } from './FullscreenCard'
 
 interface Props {
   data: TrendResponse
@@ -19,15 +20,15 @@ export function TrendChart({ data }: Props) {
     return data.items.filter((_, i) => i % step === 0).slice(-200)
   }, [data])
 
+  const controls = (
+    <TabGroup>
+      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
+      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+    </TabGroup>
+  )
+
   return (
-    <ChartSection>
-      <ChartHeader>
-        <h3>号码走势</h3>
-        <TabGroup>
-          <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
-          <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
-        </TabGroup>
-      </ChartHeader>
+    <FullscreenCard title="号码走势" controls={controls}>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -48,6 +49,6 @@ export function TrendChart({ data }: Props) {
           ))}
         </LineChart>
       </ResponsiveContainer>
-    </ChartSection>
+    </FullscreenCard>
   )
 }

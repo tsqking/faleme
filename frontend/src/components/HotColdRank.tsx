@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { HotColdResponse } from '../types'
-import { ChartSection, ChartHeader, TabGroup, Tab } from '../styles/shared'
+import { TabGroup, Tab } from '../styles/shared'
+import { FullscreenCard } from './FullscreenCard'
 import { HotColdGrid, HotTitle, ColdTitle, RankRow, RankNum, RankBarBg, RankBar, RankCount } from '../styles/HotColdStyles'
 
 interface Props {
@@ -16,15 +17,15 @@ export function HotColdRank({ data }: Props) {
 
   const maxCount = items[0]?.count ?? 1
 
+  const controls = (
+    <TabGroup>
+      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
+      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+    </TabGroup>
+  )
+
   return (
-    <ChartSection>
-      <ChartHeader>
-        <h3>冷热号分析 (近{data.period}期)</h3>
-        <TabGroup>
-          <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
-          <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
-        </TabGroup>
-      </ChartHeader>
+    <FullscreenCard title={`冷热号分析 (近${data.period}期)`} controls={controls}>
       <HotColdGrid>
         <div>
           <HotTitle>热号 Top 10</HotTitle>
@@ -51,6 +52,6 @@ export function HotColdRank({ data }: Props) {
           ))}
         </div>
       </HotColdGrid>
-    </ChartSection>
+    </FullscreenCard>
   )
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import type { FrequencyResponse } from '../types'
-import { ChartSection, ChartHeader, TabGroup, Tab } from '../styles/shared'
+import { TabGroup, Tab } from '../styles/shared'
+import { FullscreenCard } from './FullscreenCard'
 
 interface Props {
   data: FrequencyResponse
@@ -16,15 +17,15 @@ export function FrequencyChart({ data }: Props) {
   const items = zone === 'front' ? data.front : data.back
   const maxCount = Math.max(...items.map(x => x.count))
 
+  const controls = (
+    <TabGroup>
+      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区 (1-35)</Tab>
+      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区 (1-12)</Tab>
+    </TabGroup>
+  )
+
   return (
-    <ChartSection>
-      <ChartHeader>
-        <h3>号码频率统计</h3>
-        <TabGroup>
-          <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区 (1-35)</Tab>
-          <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区 (1-12)</Tab>
-        </TabGroup>
-      </ChartHeader>
+    <FullscreenCard title="号码频率统计" controls={controls}>
       <ResponsiveContainer width="100%" height={350}>
         <BarChart data={items} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -41,6 +42,6 @@ export function FrequencyChart({ data }: Props) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </ChartSection>
+    </FullscreenCard>
   )
 }
