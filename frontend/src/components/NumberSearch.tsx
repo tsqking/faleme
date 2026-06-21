@@ -133,6 +133,21 @@ const CclBtn = styled.button`
   cursor: pointer;
 `
 
+const QueryBtn = styled.button`
+  padding: 10px 24px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.85;
+  }
+`
+
 const ResultTag = styled.span<{ $hit: boolean }>`
   font-size: 13px;
   padding: 4px 10px;
@@ -161,7 +176,7 @@ export function NumberSearch() {
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
 
-  useEffect(() => { doSearch(front, back) }, [])
+  useEffect(() => { doSearch(DEFAULT_FRONT, DEFAULT_BACK) }, [])
 
   const doSearch = async (f: number[], b: number[]) => {
     setLoading(true)
@@ -203,7 +218,12 @@ export function NumberSearch() {
     setFront(tf)
     setBack(tb)
     setOpen(false)
-    doSearch(tf, tb)
+  }
+
+  const doQuery = () => {
+    if (front.length === 5 && back.length === 2) {
+      doSearch(front, back)
+    }
   }
 
   const cancel = () => {
@@ -243,7 +263,7 @@ export function NumberSearch() {
         <ClrBtn onClick={clear}>清除</ClrBtn>
         <span style={{ display: 'flex', gap: 8 }}>
           <CclBtn onClick={cancel}>取消</CclBtn>
-          <CfmBtn disabled={!ready} onClick={confirm}>确认查询</CfmBtn>
+          <CfmBtn disabled={!ready} onClick={confirm}>确认</CfmBtn>
         </span>
       </Actions>
     </PopContent>
@@ -263,6 +283,7 @@ export function NumberSearch() {
           )}
         </Selector>
       </Popover>
+      <QueryBtn onClick={doQuery}>查询</QueryBtn>
       {err && <ErrMsg>{err}</ErrMsg>}
       {!loading && result && (
         <ResultTag $hit={result.matched}>
