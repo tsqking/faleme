@@ -207,14 +207,16 @@ body {
 }
 
 .ball {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .front-ball {
