@@ -6,11 +6,13 @@ import en from './locales/en.json'
 import ja from './locales/ja.json'
 import fr from './locales/fr.json'
 
+import ko from './locales/ko.json'
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: { zh: { translation: zh }, en: { translation: en }, ja: { translation: ja }, fr: { translation: fr } },
+    resources: { zh: { translation: zh }, en: { translation: en }, ja: { translation: ja }, fr: { translation: fr }, ko: { translation: ko } },
     fallbackLng: 'zh',
     interpolation: { escapeValue: false },
   })

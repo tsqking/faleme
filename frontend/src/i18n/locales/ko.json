@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "대륙복권 데이터 대시보드"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "데이터 로드 실패: ",
+    "dash": "-",
+    "wan": "만"
+  },
+  "numberSearch": {
+    "placeholder": "클릭하여 번호 선택",
+    "frontTitle": "전구 (5개 선택)",
+    "backTitle": "후구 (2개 선택)",
+    "clear": "지우기",
+    "cancel": "취소",
+    "confirm": "확인",
+    "query": "검색",
+    "queryFailed": "검색 실패",
+    "queryError": "검색 오류",
+    "matched": "{{count}}회 일치 — {{seasons}}",
+    "neverMatched": "이 번호는 1등에 당첨된 적이 없습니다"
+  },
+  "historyTable": {
+    "title": "추첨 기록",
+    "total": "총 {{count}}회",
+    "season": "회차",
+    "frontNumbers": "전구 번호",
+    "backNumbers": "후구 번호",
+    "date": "날짜",
+    "pool": "상금 풀",
+    "firstPrizeCount": "1등 당첨 수",
+    "firstPrizeAmount": "1등 상금액",
+    "prevPage": "이전",
+    "pageInfo": "{{page}} / {{total}} 페이지",
+    "nextPage": "다음"
+  },
+  "statsCards": {
+    "totalDraws": "총 추첨 횟수",
+    "frontHottest": "전구 최다 출현",
+    "frontColdest": "전구 최소 출현",
+    "backHottest": "후구 최다 출현",
+    "backColdest": "후구 최소 출현",
+    "times": "회",
+    "latestDraw": "최신 추첨",
+    "poolAmount": "상금 풀",
+    "totalBets": "총 투표액"
+  },
+  "trendChart": {
+    "front": "전구",
+    "back": "후구",
+    "title": "번호 추세",
+    "all": "전체",
+    "recentN": "최근 N회",
+    "seasonRange": "회차 범위",
+    "draws": "회",
+    "startSeason": "시작 회차",
+    "to": "~",
+    "endSeason": "종료 회차",
+    "noMatch": "일치 없음",
+    "totalDraws": "총 {{count}}회",
+    "pos1": "제1위",
+    "pos2": "제2위",
+    "pos3": "제3위",
+    "pos4": "제4위",
+    "pos5": "제5위",
+    "back1": "후구1",
+    "back2": "후구2"
+  },
+  "frequencyChart": {
+    "front": "전구 (1-35)",
+    "back": "후구 (1-12)",
+    "title": "번호 출현 빈도",
+    "times": "회",
+    "appearCount": "출현 횟수"
+  },
+  "hotCold": {
+    "front": "전구",
+    "back": "후구",
+    "recent": "최근 ",
+    "draws": " 회",
+    "title": "핫/콜드 분석 (최근 {{period}}회)",
+    "hotTop10": "핫 Top 10",
+    "coldTop10": "콜드 Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "복원",
+    "fullscreen": "전체 화면"
+  }
+}

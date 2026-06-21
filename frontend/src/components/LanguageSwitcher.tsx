@@ -25,6 +25,7 @@ const langs = [
   { code: 'zh', label: '中文' },
   { code: 'en', label: 'EN' },
   { code: 'ja', label: '日' },
+  { code: 'ko', label: '한' },
   { code: 'fr', label: 'FR' },
 ]
 
