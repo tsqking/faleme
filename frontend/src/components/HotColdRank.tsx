@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import type { HotColdResponse } from '../types'
+import { ChartSection, ChartHeader, TabGroup, Tab } from '../styles/shared'
+import { HotColdGrid, HotTitle, ColdTitle, RankRow, RankNum, RankBarBg, RankBar, RankCount } from '../styles/HotColdStyles'
 
 interface Props {
   data: HotColdResponse
@@ -15,40 +17,40 @@ export function HotColdRank({ data }: Props) {
   const maxCount = items[0]?.count ?? 1
 
   return (
-    <div className="chart-section">
-      <div className="chart-header">
+    <ChartSection>
+      <ChartHeader>
         <h3>冷热号分析 (近{data.period}期)</h3>
-        <div className="tab-group">
-          <button className={`tab ${zone === 'front' ? 'active' : ''}`} onClick={() => setZone('front')}>前区</button>
-          <button className={`tab ${zone === 'back' ? 'active' : ''}`} onClick={() => setZone('back')}>后区</button>
-        </div>
-      </div>
-      <div className="hot-cold-grid">
+        <TabGroup>
+          <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
+          <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+        </TabGroup>
+      </ChartHeader>
+      <HotColdGrid>
         <div>
-          <h4 className="hot-title">热号 Top 10</h4>
+          <HotTitle>热号 Top 10</HotTitle>
           {hot.map(item => (
-            <div key={item.number} className="rank-row">
-              <span className="rank-num">{String(item.number).padStart(2, '0')}</span>
-              <div className="rank-bar-bg">
-                <div className="rank-bar hot" style={{ width: `${(item.count / maxCount) * 100}%` }} />
-              </div>
-              <span className="rank-count">{item.count}</span>
-            </div>
+            <RankRow key={item.number}>
+              <RankNum>{String(item.number).padStart(2, '0')}</RankNum>
+              <RankBarBg>
+                <RankBar $variant="hot" style={{ width: `${(item.count / maxCount) * 100}%` }} />
+              </RankBarBg>
+              <RankCount>{item.count}</RankCount>
+            </RankRow>
           ))}
         </div>
         <div>
-          <h4 className="cold-title">冷号 Top 10</h4>
+          <ColdTitle>冷号 Top 10</ColdTitle>
           {cold.map(item => (
-            <div key={item.number} className="rank-row">
-              <span className="rank-num">{String(item.number).padStart(2, '0')}</span>
-              <div className="rank-bar-bg">
-                <div className="rank-bar cold" style={{ width: `${(item.count / maxCount) * 100}%` }} />
-              </div>
-              <span className="rank-count">{item.count}</span>
-            </div>
+            <RankRow key={item.number}>
+              <RankNum>{String(item.number).padStart(2, '0')}</RankNum>
+              <RankBarBg>
+                <RankBar $variant="cold" style={{ width: `${(item.count / maxCount) * 100}%` }} />
+              </RankBarBg>
+              <RankCount>{item.count}</RankCount>
+            </RankRow>
           ))}
         </div>
-      </div>
-    </div>
+      </HotColdGrid>
+    </ChartSection>
   )
 }

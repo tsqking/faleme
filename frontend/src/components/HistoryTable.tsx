@@ -1,4 +1,7 @@
+import styled from 'styled-components'
 import type { HistoryResponse } from '../types'
+import { ChartSection, ChartHeader, TotalLabel, Pagination } from '../styles/shared'
+import { TableWrapper, HistoryTableStyle } from '../styles/HistoryTableStyles'
 
 interface Props {
   data: HistoryResponse
@@ -7,17 +10,17 @@ interface Props {
 
 export function HistoryTable({ data, onPageChange }: Props) {
   return (
-    <div className="chart-section">
-      <div className="chart-header">
+    <ChartSection>
+      <ChartHeader>
         <h3>开奖历史</h3>
-        <span className="total-label">共 {data.total} 期</span>
-      </div>
-      <div className="table-wrapper">
-        <table className="history-table">
+        <TotalLabel>共 {data.total} 期</TotalLabel>
+      </ChartHeader>
+      <TableWrapper>
+        <HistoryTableStyle>
           <thead>
             <tr>
-              <th className="season-th">期号</th>
-              <th colSpan={5} className="front-th">前区号码</th>
+              <th>期号</th>
+              <th colSpan={5}>前区号码</th>
               <th colSpan={2} className="back-th">后区号码</th>
             </tr>
           </thead>
@@ -26,23 +29,48 @@ export function HistoryTable({ data, onPageChange }: Props) {
               <tr key={item.season}>
                 <td className="season-cell">{item.season}</td>
                 {item.front.map((n, i) => (
-                  <td key={i} className={`ball front-ball ${n >= 25 ? 'big' : n >= 15 ? 'mid' : 'small'}`}>
-                    {String(n).padStart(2, '0')}
+                  <td key={i}>
+                    <Ball $zone="front" $size={n >= 25 ? 'big' : n >= 15 ? 'mid' : 'small'}>
+                      {String(n).padStart(2, '0')}
+                    </Ball>
                   </td>
                 ))}
                 {item.back.map((n, i) => (
-                  <td key={i} className="ball back-ball">{String(n).padStart(2, '0')}</td>
+                  <td key={i}>
+                    <Ball $zone="back">
+                      {String(n).padStart(2, '0')}
+                    </Ball>
+                  </td>
                 ))}
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-      <div className="pagination">
+        </HistoryTableStyle>
+      </TableWrapper>
+      <Pagination>
         <button disabled={data.page <= 1} onClick={() => onPageChange(data.page - 1)}>上一页</button>
         <span>第 {data.page} / {data.total_pages} 页</span>
         <button disabled={data.page >= data.total_pages} onClick={() => onPageChange(data.page + 1)}>下一页</button>
-      </div>
-    </div>
+      </Pagination>
+    </ChartSection>
   )
 }
+
+const Ball = styled.span<{ $zone: 'front' | 'back'; $size?: 'small' | 'mid' | 'big' }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: #fff;
+  background: ${p => {
+    if (p.$zone === 'back') return '#4d96ff'
+    if (p.$size === 'small') return '#6bcb77'
+    if (p.$size === 'mid') return '#f39c12'
+    return '#e74c3c'
+  }};
+`

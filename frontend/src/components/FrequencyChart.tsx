@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import type { FrequencyResponse } from '../types'
+import { ChartSection, ChartHeader, TabGroup, Tab } from '../styles/shared'
 
 interface Props {
   data: FrequencyResponse
@@ -16,14 +17,14 @@ export function FrequencyChart({ data }: Props) {
   const maxCount = Math.max(...items.map(x => x.count))
 
   return (
-    <div className="chart-section">
-      <div className="chart-header">
+    <ChartSection>
+      <ChartHeader>
         <h3>号码频率统计</h3>
-        <div className="tab-group">
-          <button className={`tab ${zone === 'front' ? 'active' : ''}`} onClick={() => setZone('front')}>前区 (1-35)</button>
-          <button className={`tab ${zone === 'back' ? 'active' : ''}`} onClick={() => setZone('back')}>后区 (1-12)</button>
-        </div>
-      </div>
+        <TabGroup>
+          <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区 (1-35)</Tab>
+          <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区 (1-12)</Tab>
+        </TabGroup>
+      </ChartHeader>
       <ResponsiveContainer width="100%" height={350}>
         <BarChart data={items} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -40,6 +41,6 @@ export function FrequencyChart({ data }: Props) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </div>
+    </ChartSection>
   )
 }

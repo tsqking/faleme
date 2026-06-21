@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import type { TrendResponse } from '../types'
+import { ChartSection, ChartHeader, TabGroup, Tab } from '../styles/shared'
 
 interface Props {
   data: TrendResponse
@@ -19,14 +20,14 @@ export function TrendChart({ data }: Props) {
   }, [data])
 
   return (
-    <div className="chart-section">
-      <div className="chart-header">
+    <ChartSection>
+      <ChartHeader>
         <h3>号码走势</h3>
-        <div className="tab-group">
-          <button className={`tab ${zone === 'front' ? 'active' : ''}`} onClick={() => setZone('front')}>前区</button>
-          <button className={`tab ${zone === 'back' ? 'active' : ''}`} onClick={() => setZone('back')}>后区</button>
-        </div>
-      </div>
+        <TabGroup>
+          <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
+          <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+        </TabGroup>
+      </ChartHeader>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -47,6 +48,6 @@ export function TrendChart({ data }: Props) {
           ))}
         </LineChart>
       </ResponsiveContainer>
-    </div>
+    </ChartSection>
   )
 }
