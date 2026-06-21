@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import styled from 'styled-components'
 import type { TrendResponse } from '../types'
@@ -50,25 +50,125 @@ const FilterInput = styled.input`
   }
 `
 
-const FilterSelect = styled.select`
+const CountLabel = styled.span`
+  font-size: 12px;
+  color: #999;
+  margin-left: auto;
+`
+
+// --- SeasonSelect autocomplete ---
+
+const SeasonWrapper = styled.div`
+  position: relative;
+`
+
+const SeasonInput = styled.input`
+  width: 120px;
   padding: 4px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 12px;
   outline: none;
-  background: #fff;
-  max-height: 200px;
 
   &:focus {
     border-color: #1a1a2e;
   }
 `
 
-const CountLabel = styled.span`
+const Dropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+`
+
+const Option = styled.div<{ $active?: boolean }>`
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  background: ${p => p.$active ? '#1a1a2e' : '#fff'};
+  color: ${p => p.$active ? '#fff' : '#333'};
+
+  &:hover {
+    background: ${p => p.$active ? '#1a1a2e' : '#f0f0f0'};
+  }
+`
+
+const Empty = styled.div`
+  padding: 8px;
   font-size: 12px;
   color: #999;
-  margin-left: auto;
+  text-align: center;
 `
+
+interface SeasonSelectProps {
+  placeholder: string
+  value: string
+  seasons: string[]
+  onChange: (v: string) => void
+}
+
+function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectProps) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState(value)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setQuery(value)
+  }, [value])
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const filtered = useMemo(() => {
+    if (!query) return seasons.slice(0, 200)
+    const q = query.toLowerCase()
+    return seasons.filter(s => s.toLowerCase().includes(q)).slice(0, 200)
+  }, [seasons, query])
+
+  const handleSelect = (s: string) => {
+    onChange(s)
+    setQuery(s)
+    setOpen(false)
+  }
+
+  return (
+    <SeasonWrapper ref={wrapperRef}>
+      <SeasonInput
+        value={open ? query : value}
+        onChange={e => { setQuery(e.target.value); setOpen(true) }}
+        onFocus={() => { setQuery(value); setOpen(true) }}
+        placeholder={placeholder}
+      />
+      {open && (
+        <Dropdown>
+          {filtered.map(s => (
+            <Option key={s} $active={s === value} onClick={() => handleSelect(s)}>
+              {s}
+            </Option>
+          ))}
+          {filtered.length === 0 && <Empty>无匹配</Empty>}
+        </Dropdown>
+      )}
+    </SeasonWrapper>
+  )
+}
 
 export function TrendChart({ data }: Props) {
   const [zone, setZone] = useState<'front' | 'back'>('front')
@@ -126,15 +226,9 @@ export function TrendChart({ data }: Props) {
         )}
         {filterMode === 'range' && (
           <>
-            <FilterSelect value={startSeason} onChange={e => setStartSeason(e.target.value)}>
-              <option value="">起始期号</option>
-              {seasons.map(s => <option key={s} value={s}>{s}</option>)}
-            </FilterSelect>
+            <SeasonSelect placeholder="起始期号" value={startSeason} seasons={seasons} onChange={setStartSeason} />
             <span style={{fontSize: 12, color: '#999'}}>至</span>
-            <FilterSelect value={endSeason} onChange={e => setEndSeason(e.target.value)}>
-              <option value="">截止期号</option>
-              {seasons.map(s => <option key={s} value={s}>{s}</option>)}
-            </FilterSelect>
+            <SeasonSelect placeholder="截止期号" value={endSeason} seasons={seasons} onChange={setEndSeason} />
           </>
         )}
         <CountLabel>共 {filteredItems.length} 期</CountLabel>
