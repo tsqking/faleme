@@ -79,9 +79,21 @@ def get_frequency():
 
 
 @app.get("/api/stats/trend")
-def get_trend():
+def get_trend(
+    start_season: str = Query(None, description="起始期号"),
+    end_season: str = Query(None, description="截止期号"),
+    limit: int = Query(None, ge=1, description="最近N条"),
+):
     data = [_parse_numbers(d) for d in _load_data()]
     data.sort(key=lambda x: x["season"])
+
+    if start_season:
+        data = [d for d in data if d["season"] >= start_season]
+    if end_season:
+        data = [d for d in data if d["season"] <= end_season]
+    if limit:
+        data = data[-limit:]
+
     items = []
     for d in data:
         items.append({
