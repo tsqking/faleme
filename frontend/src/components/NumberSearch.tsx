@@ -134,13 +134,14 @@ const CclBtn = styled.button`
 `
 
 const QueryBtn = styled.button`
-  padding: 10px 24px;
+  padding: 21px 24px;
   background: #1a1a2e;
   color: #fff;
   border: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1;
   cursor: pointer;
 
   &:hover {
