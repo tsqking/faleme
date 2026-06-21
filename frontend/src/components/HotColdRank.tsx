@@ -6,9 +6,11 @@ import { HotColdGrid, HotTitle, ColdTitle, RankRow, RankNum, RankBarBg, RankBar,
 
 interface Props {
   data: HotColdResponse
+  period: number
+  onPeriodChange: (v: number) => void
 }
 
-export function HotColdRank({ data }: Props) {
+export function HotColdRank({ data, period, onPeriodChange }: Props) {
   const [zone, setZone] = useState<'front' | 'back'>('front')
   const items = zone === 'front' ? data.front : data.back
 
@@ -21,6 +23,17 @@ export function HotColdRank({ data }: Props) {
     <TabGroup>
       <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
       <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+      <span style={{ marginLeft: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontSize: 13, color: '#666' }}>近</span>
+        <input
+          type="number"
+          min={1}
+          value={period}
+          onChange={e => onPeriodChange(Math.max(1, Number(e.target.value)))}
+          style={{ width: 60, padding: '4px 8px', border: '1px solid #ddd', borderRadius: 4, fontSize: 13 }}
+        />
+        <span style={{ fontSize: 13, color: '#666' }}>期</span>
+      </span>
     </TabGroup>
   )
 

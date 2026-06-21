@@ -38,7 +38,8 @@ const StatusMessage = styled.div<{ $isError?: boolean }>`
 
 function App() {
   const [page, setPage] = useState(1)
-  const { history, frequency, trend, hotCold, loading, error } = useLotteryData(page)
+  const [period, setPeriod] = useState(30)
+  const { history, frequency, trend, hotCold, loading, error } = useLotteryData(page, 15, period)
 
   return (
     <>
@@ -60,7 +61,7 @@ function App() {
             <FullRow>{history && <HistoryTable data={history} onPageChange={setPage} />}</FullRow>
             <FullRow>{trend && <TrendChart data={trend} />}</FullRow>
             <FullRow>{frequency && <FrequencyChart data={frequency} />}</FullRow>
-            <FullRow>{hotCold && <HotColdRank data={hotCold} />}</FullRow>
+            <FullRow>{hotCold && <HotColdRank data={hotCold} period={period} onPeriodChange={setPeriod} />}</FullRow>
           </>
         )}
       </AppContainer>
