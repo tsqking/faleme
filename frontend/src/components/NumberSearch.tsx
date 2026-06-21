@@ -14,7 +14,7 @@ const SearchRow = styled.div`
 const Selector = styled.div`
   flex: 0 0 50%;
   min-width: 200px;
-  padding: 10px 14px;
+  padding: 8px 14px;
   border: 1px solid #ddd;
   border-radius: 8px;
   cursor: pointer;
@@ -29,7 +29,7 @@ const BallRow = styled.div`
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  min-height: 36px;
+  min-height: 32px;
   align-items: center;
 `
 
@@ -37,10 +37,10 @@ const Ball = styled.span<{ $zone: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #fff;
   background: ${p => p.$zone === 'back' ? '#4d96ff' : '#e74c3c'};
@@ -48,8 +48,8 @@ const Ball = styled.span<{ $zone: string }>`
 
 const Placeholder = styled.span`
   color: #999;
-  font-size: 14px;
-  line-height: 36px;
+  font-size: 13px;
+  line-height: 32px;
 `
 
 const PopContent = styled.div`
@@ -134,7 +134,7 @@ const CclBtn = styled.button`
 `
 
 const QueryBtn = styled.button`
-  padding: 21px 24px;
+  padding: 17px 24px;
   background: #1a1a2e;
   color: #fff;
   border: none;
