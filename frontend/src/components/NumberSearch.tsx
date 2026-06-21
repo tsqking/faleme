@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { Popover } from 'antd'
 import type { CheckResult } from '../types'
@@ -177,8 +177,6 @@ export function NumberSearch() {
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
 
-  useEffect(() => { doSearch(DEFAULT_FRONT, DEFAULT_BACK) }, [])
-
   const doSearch = async (f: number[], b: number[]) => {
     setLoading(true)
     setErr(null)
@@ -213,6 +211,10 @@ export function NumberSearch() {
   const clear = () => {
     setTf([])
     setTb([])
+    setFront([])
+    setBack([])
+    setResult(null)
+    setErr(null)
   }
 
   const confirm = () => {
