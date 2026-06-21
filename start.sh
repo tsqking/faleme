@@ -31,4 +31,4 @@ sleep 2
 
 echo "=== 启动前端 (Vite) ==="
 cd "$SCRIPT_DIR/frontend"
-npx vite --host 127.0.0.1 --port $FRONTEND_PORT
+pnpm vite --host 127.0.0.1 --port $FRONTEND_PORT
