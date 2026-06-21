@@ -29,6 +29,8 @@ const BallRow = styled.div`
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  min-height: 36px;
+  align-items: center;
 `
 
 const Ball = styled.span<{ $zone: string }>`
@@ -47,6 +49,7 @@ const Ball = styled.span<{ $zone: string }>`
 const Placeholder = styled.span`
   color: #999;
   font-size: 14px;
+  line-height: 36px;
 `
 
 const PopContent = styled.div`
@@ -250,10 +253,10 @@ export function NumberSearch() {
     <SearchRow>
       <Popover content={pop} trigger="click" open={open} onOpenChange={handleOpen} placement="bottomLeft">
         <Selector>
-          {front.length > 0 || back.length > 0 ? (
+          {(open ? (tf.length > 0 || tb.length > 0) : (front.length > 0 || back.length > 0)) ? (
             <BallRow>
-              {front.map(n => <Ball key={n} $zone="front">{String(n).padStart(2, '0')}</Ball>)}
-              {back.map(n => <Ball key={n} $zone="back">{String(n).padStart(2, '0')}</Ball>)}
+              {(open ? tf : front).map(n => <Ball key={n} $zone="front">{String(n).padStart(2, '0')}</Ball>)}
+              {(open ? tb : back).map(n => <Ball key={n} $zone="back">{String(n).padStart(2, '0')}</Ball>)}
             </BallRow>
           ) : (
             <Placeholder>点击选择号码</Placeholder>
