@@ -7,12 +7,14 @@ import ja from './locales/ja.json'
 import fr from './locales/fr.json'
 
 import ko from './locales/ko.json'
+import ru from './locales/ru.json'
+import th from './locales/th.json'
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: { zh: { translation: zh }, en: { translation: en }, ja: { translation: ja }, fr: { translation: fr }, ko: { translation: ko } },
+    resources: { zh: { translation: zh }, en: { translation: en }, ja: { translation: ja }, fr: { translation: fr }, ko: { translation: ko }, ru: { translation: ru }, th: { translation: th } },
     fallbackLng: 'zh',
     interpolation: { escapeValue: false },
   })

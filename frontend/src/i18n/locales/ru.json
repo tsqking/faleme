@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "Панель данных Лото"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка загрузки данных: ",
+    "dash": "-",
+    "wan": "0k"
+  },
+  "numberSearch": {
+    "placeholder": "Нажмите для выбора номеров",
+    "frontTitle": "Передняя зона (выбрать 5)",
+    "backTitle": "Задняя зона (выбрать 2)",
+    "clear": "Очистить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "query": "Поиск",
+    "queryFailed": "Ошибка поиска",
+    "queryError": "Ошибка запроса",
+    "matched": "Совпадений: {{count}} — {{seasons}}",
+    "neverMatched": "Этот номер никогда не выигрывал первый приз"
+  },
+  "historyTable": {
+    "title": "История розыгрышей",
+    "total": "Всего {{count}} розыгрышей",
+    "season": "Выпуск",
+    "frontNumbers": "Номера передней зоны",
+    "backNumbers": "Номера задней зоны",
+    "date": "Дата",
+    "pool": "Призовой фонд",
+    "firstPrizeCount": "Кол-во 1-х призов",
+    "firstPrizeAmount": "Сумма 1-го приза",
+    "prevPage": "Назад",
+    "pageInfo": "Стр. {{page}} / {{total}}",
+    "nextPage": "Вперед"
+  },
+  "statsCards": {
+    "totalDraws": "Всего розыгрышей",
+    "frontHottest": "Самый частый передний",
+    "frontColdest": "Самый редкий передний",
+    "backHottest": "Самый частый задний",
+    "backColdest": "Самый редкий задний",
+    "times": "раз",
+    "latestDraw": "Последний розыгрыш",
+    "poolAmount": "Призовой фонд",
+    "totalBets": "Всего ставок"
+  },
+  "trendChart": {
+    "front": "Передняя",
+    "back": "Задняя",
+    "title": "Тенденции номеров",
+    "all": "Все",
+    "recentN": "Последние N",
+    "seasonRange": "Диапазон выпусков",
+    "draws": "роз.",
+    "startSeason": "Начальный выпуск",
+    "to": "—",
+    "endSeason": "Конечный выпуск",
+    "noMatch": "Нет совпадений",
+    "totalDraws": "Всего {{count}} роз.",
+    "pos1": "Поз 1",
+    "pos2": "Поз 2",
+    "pos3": "Поз 3",
+    "pos4": "Поз 4",
+    "pos5": "Поз 5",
+    "back1": "Зад 1",
+    "back2": "Зад 2"
+  },
+  "frequencyChart": {
+    "front": "Передняя (1-35)",
+    "back": "Задняя (1-12)",
+    "title": "Частота номеров",
+    "times": "раз",
+    "appearCount": "Количество появлений"
+  },
+  "hotCold": {
+    "front": "Передняя",
+    "back": "Задняя",
+    "recent": "Последние ",
+    "draws": " роз.",
+    "title": "Горячий/Холодный анализ (последние {{period}} роз.)",
+    "hotTop10": "Горячие Top 10",
+    "coldTop10": "Холодные Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "Восстановить",
+    "fullscreen": "Полный экран"
+  }
+}

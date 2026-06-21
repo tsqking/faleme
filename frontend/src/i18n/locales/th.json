@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "แดชบอร์ดข้อมูลลอตเตอรี่"
+  },
+  "common": {
+    "loading": "กำลังโหลด...",
+    "error": "โหลดข้อมูลล้มเหลว: ",
+    "dash": "-",
+    "wan": "0k"
+  },
+  "numberSearch": {
+    "placeholder": "คลิกเพื่อเลือกหมายเลข",
+    "frontTitle": "หน้าบ้าน (เลือก 5)",
+    "backTitle": "หลังบ้าน (เลือก 2)",
+    "clear": "ล้าง",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "query": "ค้นหา",
+    "queryFailed": "ค้นหาล้มเหลว",
+    "queryError": "ข้อผิดพลาดในการค้นหา",
+    "matched": "ตรงกัน {{count}} ครั้ง — {{seasons}}",
+    "neverMatched": "หมายเลขนี้ไม่เคยถูกรางวัลที่หนึ่ง"
+  },
+  "historyTable": {
+    "title": "ประวัติการออกรางวัล",
+    "total": "รวม {{count}} งวด",
+    "season": "งวดที่",
+    "frontNumbers": "หมายเลขหน้าบ้าน",
+    "backNumbers": "หมายเลขหลังบ้าน",
+    "date": "วันที่",
+    "pool": "เงินรางวัลรวม",
+    "firstPrizeCount": "จำนวนรางวัลที่ 1",
+    "firstPrizeAmount": "จำนวนเงินรางวัลที่ 1",
+    "prevPage": "ก่อนหน้า",
+    "pageInfo": "หน้า {{page}} / {{total}}",
+    "nextPage": "ถัดไป"
+  },
+  "statsCards": {
+    "totalDraws": "จำนวนงวดทั้งหมด",
+    "frontHottest": "หน้าบ้านออกบ่อยที่สุด",
+    "frontColdest": "หน้าบ้านออกน้อยที่สุด",
+    "backHottest": "หลังบ้านออกบ่อยที่สุด",
+    "backColdest": "หลังบ้านออกน้อยที่สุด",
+    "times": "ครั้ง",
+    "latestDraw": "งวดล่าสุด",
+    "poolAmount": "เงินรางวัลรวม",
+    "totalBets": "ยอดเดิมพันรวม"
+  },
+  "trendChart": {
+    "front": "หน้าบ้าน",
+    "back": "หลังบ้าน",
+    "title": "แนวโน้มหมายเลข",
+    "all": "ทั้งหมด",
+    "recentN": "N ล่าสุด",
+    "seasonRange": "ช่วงงวด",
+    "draws": "งวด",
+    "startSeason": "งวดเริ่มต้น",
+    "to": "ถึง",
+    "endSeason": "งวดสิ้นสุด",
+    "noMatch": "ไม่พบรายการ",
+    "totalDraws": "รวม {{count}} งวด",
+    "pos1": "อันดับ 1",
+    "pos2": "อันดับ 2",
+    "pos3": "อันดับ 3",
+    "pos4": "อันดับ 4",
+    "pos5": "อันดับ 5",
+    "back1": "หลัง 1",
+    "back2": "หลัง 2"
+  },
+  "frequencyChart": {
+    "front": "หน้าบ้าน (1-35)",
+    "back": "หลังบ้าน (1-12)",
+    "title": "ความถี่หมายเลข",
+    "times": "ครั้ง",
+    "appearCount": "จำนวนครั้งที่ปรากฏ"
+  },
+  "hotCold": {
+    "front": "หน้าบ้าน",
+    "back": "หลังบ้าน",
+    "recent": "ล่าสุด ",
+    "draws": " งวด",
+    "title": "วิเคราะห์ร้อน/เย็น ({{period}} งวดล่าสุด)",
+    "hotTop10": "ร้อน Top 10",
+    "coldTop10": "เย็น Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "คืนค่า",
+    "fullscreen": "เต็มจอ"
+  }
+}
