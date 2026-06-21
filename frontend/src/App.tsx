@@ -58,7 +58,7 @@ function App() {
           <>
             <NumberSearch />
 
-            {frequency && <StatsCards data={frequency} />}
+            {frequency && <StatsCards data={frequency} latestDraw={history?.items[0]} />}
 
             <ChartsRow>
               {trend && <TrendChart data={trend} />}

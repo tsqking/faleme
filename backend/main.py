@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import date
 from typing import Any
 
 from fastapi import FastAPI, Query
@@ -21,17 +22,37 @@ DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data
 
 @app.on_event("startup")
 def startup():
+    today = date.today().isoformat()
+
     if not os.path.exists(DATA_FILE):
         print("data.json 不存在，正在从网络获取...")
         refresh_data()
         print("数据获取完成")
+        return
+
+    raw = _load_raw()
+    if isinstance(raw, list):
+        print("data.json 格式较旧，正在重新抓取...")
+        refresh_data()
+        print("数据更新完成")
+    elif raw.get("_fetched_date") != today:
+        print(f"数据日期 {raw.get('_fetched_date')} 与今天 {today} 不一致，正在重新抓取...")
+        refresh_data()
+        print("数据更新完成")
     else:
-        print("使用本地缓存 data.json")
+        print(f"数据已是最新 ({today})")
+
+
+def _load_raw() -> Any:
+    with open(DATA_FILE, encoding="utf-8") as f:
+        return json.load(f)
 
 
 def _load_data() -> list[dict[str, Any]]:
-    with open(DATA_FILE, encoding="utf-8") as f:
-        return json.load(f)
+    raw = _load_raw()
+    if isinstance(raw, list):
+        return raw
+    return raw["data"]
 
 
 def _parse_numbers(item: dict[str, Any]) -> dict[str, Any]:
@@ -40,6 +61,13 @@ def _parse_numbers(item: dict[str, Any]) -> dict[str, Any]:
         "season": item["season"],
         "front": [int(x) for x in parts[:5]],
         "back": [int(x) for x in parts[5:]],
+        "pool": item.get("pool"),
+        "first_prize_count": item.get("first_prize_count"),
+        "first_prize_amount": item.get("first_prize_amount"),
+        "second_prize_count": item.get("second_prize_count"),
+        "second_prize_amount": item.get("second_prize_amount"),
+        "total_bets": item.get("total_bets"),
+        "draw_date": item.get("draw_date"),
     }
 
 

@@ -26,6 +26,19 @@ export const HistoryTableStyle = styled.table`
     text-align: left;
     border-bottom: 1px solid #f0f0f0;
   }
+
+  .season-cell {
+    font-weight: 600;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .info-cell {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    min-width: 64px;
+  }
 `
 
 export const SeasonCell = styled.td`

@@ -9,6 +9,11 @@ interface Props {
   onPageChange: (page: number) => void
 }
 
+function fmtMoney(n: number | null): string {
+  if (n == null) return '-'
+  return (n / 10000).toFixed(0) + '万'
+}
+
 export function HistoryTable({ data, onPageChange }: Props) {
   return (
     <FullscreenCard title="开奖历史" controls={<TotalLabel>共 {data.total} 期</TotalLabel>}>
@@ -19,6 +24,10 @@ export function HistoryTable({ data, onPageChange }: Props) {
               <th>期号</th>
               <th colSpan={5}>前区号码</th>
               <th colSpan={2} className="back-th">后区号码</th>
+              <th>日期</th>
+              <th>奖池</th>
+              <th>一等注数</th>
+              <th>一等奖金</th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +48,10 @@ export function HistoryTable({ data, onPageChange }: Props) {
                     </Ball>
                   </td>
                 ))}
+                <td className="info-cell">{item.draw_date ?? '-'}</td>
+                <td className="info-cell">{fmtMoney(item.pool)}</td>
+                <td className="info-cell">{item.first_prize_count ?? '-'}</td>
+                <td className="info-cell">{fmtMoney(item.first_prize_amount)}</td>
               </tr>
             ))}
           </tbody>

@@ -2,6 +2,13 @@ export interface DrawItem {
   season: string
   front: number[]
   back: number[]
+  pool: number | null
+  first_prize_count: number | null
+  first_prize_amount: number | null
+  second_prize_count: number | null
+  second_prize_amount: number | null
+  total_bets: number | null
+  draw_date: string | null
 }
 
 export interface HistoryResponse {
