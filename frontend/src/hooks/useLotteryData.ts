@@ -10,24 +10,33 @@ interface LotteryData {
   error: string | null
 }
 
-export function useLotteryData(page: number, pageSize: number = 15): LotteryData & { setPage: (p: number) => void; setPageSize: (s: number) => void } {
+export function useLotteryData(page: number, pageSize: number = 15): LotteryData {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [history, setHistory] = useState<HistoryResponse | null>(null)
   const [frequency, setFrequency] = useState<FrequencyResponse | null>(null)
   const [trend, setTrend] = useState<TrendResponse | null>(null)
   const [hotCold, setHotCold] = useState<HotColdResponse | null>(null)
-  const [currentPage, setPage] = useState(page)
-  const [currentPageSize, setPageSize] = useState(pageSize)
+  const [initialLoad, setInitialLoad] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    setError(null)
-
     const fetchData = async () => {
+      if (!initialLoad) {
+        try {
+          const h = await fetch(`/api/history?page=${page}&page_size=${pageSize}`).then<HistoryResponse>(r => r.json())
+          setHistory(h)
+        } catch (e) {
+          setError(e instanceof Error ? e.message : 'Failed to fetch data')
+        }
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+
       try {
         const [h, f, t, hc] = await Promise.all([
-          fetch(`/api/history?page=${currentPage}&page_size=${currentPageSize}`).then<HistoryResponse>(r => r.json()),
+          fetch(`/api/history?page=${page}&page_size=${pageSize}`).then<HistoryResponse>(r => r.json()),
           fetch('/api/stats/frequency').then<FrequencyResponse>(r => r.json()),
           fetch('/api/stats/trend').then<TrendResponse>(r => r.json()),
           fetch('/api/stats/hot-cold?period=30').then<HotColdResponse>(r => r.json()),
@@ -40,11 +49,12 @@ export function useLotteryData(page: number, pageSize: number = 15): LotteryData
         setError(e instanceof Error ? e.message : 'Failed to fetch data')
       } finally {
         setLoading(false)
+        setInitialLoad(false)
       }
     }
 
     fetchData()
-  }, [currentPage, currentPageSize])
+  }, [page, pageSize])
 
-  return { history, frequency, trend, hotCold, loading, error, setPage, setPageSize }
+  return { history, frequency, trend, hotCold, loading, error }
 }
