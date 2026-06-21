@@ -1,6 +1,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 import type { TrendResponse } from '../types'
 import { TabGroup, Tab } from '../styles/shared'
 import { FullscreenCard } from './FullscreenCard'
@@ -12,7 +13,7 @@ interface Props {
 type FilterMode = 'none' | 'limit' | 'range'
 
 const COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#9b59b6', '#e17055', '#00cec9']
-const LABELS = ['第1位', '第2位', '第3位', '第4位', '第5位', '后区1', '后区2']
+// LABELS defined inside component
 
 const FilterBar = styled.div`
   display: flex;
@@ -117,6 +118,7 @@ interface SeasonSelectProps {
 }
 
 function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState(value)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -163,7 +165,7 @@ function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectPro
               {s}
             </Option>
           ))}
-          {filtered.length === 0 && <Empty>无匹配</Empty>}
+          {filtered.length === 0 && <Empty>{t('trendChart.noMatch')}</Empty>}
         </Dropdown>
       )}
     </SeasonWrapper>
@@ -171,6 +173,8 @@ function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectPro
 }
 
 export function TrendChart({ data }: Props) {
+  const { t } = useTranslation()
+  const LABELS = [t('trendChart.pos1'), t('trendChart.pos2'), t('trendChart.pos3'), t('trendChart.pos4'), t('trendChart.pos5'), t('trendChart.back1'), t('trendChart.back2')]
   const [zone, setZone] = useState<'front' | 'back'>('front')
   const [filterMode, setFilterMode] = useState<FilterMode>('none')
   const [limitInput, setLimitInput] = useState('50')
@@ -207,31 +211,31 @@ export function TrendChart({ data }: Props) {
 
   const controls = (
     <TabGroup>
-      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
-      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>{t('trendChart.front')}</Tab>
+      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>{t('trendChart.back')}</Tab>
     </TabGroup>
   )
 
   return (
-    <FullscreenCard title="号码走势" controls={controls}>
+    <FullscreenCard title={t('trendChart.title')} controls={controls}>
       <FilterBar>
-        <FilterTab $active={filterMode === 'none'} onClick={() => { setFilterMode('none'); setStartSeason(''); setEndSeason(''); setLimitInput('50') }}>全部</FilterTab>
-        <FilterTab $active={filterMode === 'limit'} onClick={() => setFilterMode('limit')}>最近N期</FilterTab>
-        <FilterTab $active={filterMode === 'range'} onClick={() => setFilterMode('range')}>期号区间</FilterTab>
+        <FilterTab $active={filterMode === 'none'} onClick={() => { setFilterMode('none'); setStartSeason(''); setEndSeason(''); setLimitInput('50') }}>{t('trendChart.all')}</FilterTab>
+        <FilterTab $active={filterMode === 'limit'} onClick={() => setFilterMode('limit')}>{t('trendChart.recentN')}</FilterTab>
+        <FilterTab $active={filterMode === 'range'} onClick={() => setFilterMode('range')}>{t('trendChart.seasonRange')}</FilterTab>
         {filterMode === 'limit' && (
           <>
             <FilterInput type="number" min={1} value={limitInput} onChange={e => setLimitInput(e.target.value)} />
-            <span style={{fontSize: 12, color: '#999'}}>期</span>
+            <span style={{fontSize: 12, color: '#999'}}>{t('trendChart.draws')}</span>
           </>
         )}
         {filterMode === 'range' && (
           <>
-            <SeasonSelect placeholder="起始期号" value={startSeason} seasons={seasons} onChange={setStartSeason} />
-            <span style={{fontSize: 12, color: '#999'}}>至</span>
-            <SeasonSelect placeholder="截止期号" value={endSeason} seasons={seasons} onChange={setEndSeason} />
+            <SeasonSelect placeholder={t('trendChart.startSeason')} value={startSeason} seasons={seasons} onChange={setStartSeason} />
+            <span style={{fontSize: 12, color: '#999'}}>{t('trendChart.to')}</span>
+            <SeasonSelect placeholder={t('trendChart.endSeason')} value={endSeason} seasons={seasons} onChange={setEndSeason} />
           </>
         )}
-        <CountLabel>共 {filteredItems.length} 期</CountLabel>
+        <CountLabel>{t('trendChart.totalDraws', { count: filteredItems.length })}</CountLabel>
       </FilterBar>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>

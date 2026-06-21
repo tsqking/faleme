@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "Tableau de Bord Lotto"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Échec du chargement des données : ",
+    "dash": "-",
+    "wan": "0k"
+  },
+  "numberSearch": {
+    "placeholder": "Cliquez pour sélectionner les numéros",
+    "frontTitle": "Zone avant (choisir 5)",
+    "backTitle": "Zone arrière (choisir 2)",
+    "clear": "Effacer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "query": "Rechercher",
+    "queryFailed": "Échec de la recherche",
+    "queryError": "Erreur de recherche",
+    "matched": "Correspond {{count}} fois — {{seasons}}",
+    "neverMatched": "Ce numéro n'a jamais gagné le premier prix"
+  },
+  "historyTable": {
+    "title": "Historique des Tirages",
+    "total": "{{count}} tirages au total",
+    "season": "Numéro",
+    "frontNumbers": "Numéros Avant",
+    "backNumbers": "Numéros Arrière",
+    "date": "Date",
+    "pool": "Cagnotte",
+    "firstPrizeCount": "Nombre 1er Prix",
+    "firstPrizeAmount": "Montant 1er Prix",
+    "prevPage": "Précédent",
+    "pageInfo": "Page {{page}} / {{total}}",
+    "nextPage": "Suivant"
+  },
+  "statsCards": {
+    "totalDraws": "Total des Tirages",
+    "frontHottest": "Plus Fréquent Avant",
+    "frontColdest": "Plus Rare Avant",
+    "backHottest": "Plus Fréquent Arrière",
+    "backColdest": "Plus Rare Arrière",
+    "times": "fois",
+    "latestDraw": "Dernier Tirage",
+    "poolAmount": "Cagnotte",
+    "totalBets": "Total des Mises"
+  },
+  "trendChart": {
+    "front": "Avant",
+    "back": "Arrière",
+    "title": "Tendances des Numéros",
+    "all": "Tout",
+    "recentN": "N Récents",
+    "seasonRange": "Plage de Numéros",
+    "draws": "tirages",
+    "startSeason": "Numéro Début",
+    "to": "à",
+    "endSeason": "Numéro Fin",
+    "noMatch": "Aucun résultat",
+    "totalDraws": "{{count}} tirages au total",
+    "pos1": "Pos 1",
+    "pos2": "Pos 2",
+    "pos3": "Pos 3",
+    "pos4": "Pos 4",
+    "pos5": "Pos 5",
+    "back1": "Arr 1",
+    "back2": "Arr 2"
+  },
+  "frequencyChart": {
+    "front": "Avant (1-35)",
+    "back": "Arrière (1-12)",
+    "title": "Fréquence des Numéros",
+    "times": "fois",
+    "appearCount": "Nombre d'apparitions"
+  },
+  "hotCold": {
+    "front": "Avant",
+    "back": "Arrière",
+    "recent": "Derniers ",
+    "draws": " tirages",
+    "title": "Analyse Chaud/Froid ({{period}} derniers tirages)",
+    "hotTop10": "Chaud Top 10",
+    "coldTop10": "Froid Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "Restaurer",
+    "fullscreen": "Plein écran"
+  }
+}

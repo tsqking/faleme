@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "大乐透数据看板"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "数据加载失败：",
+    "dash": "-",
+    "wan": "万"
+  },
+  "numberSearch": {
+    "placeholder": "点击选择号码",
+    "frontTitle": "前区（选5个）",
+    "backTitle": "后区（选2个）",
+    "clear": "清除",
+    "cancel": "取消",
+    "confirm": "确认",
+    "query": "查询",
+    "queryFailed": "查询失败",
+    "queryError": "查询出错",
+    "matched": "中过 {{count}} 次 — {{seasons}}",
+    "neverMatched": "该号码从未中过一等奖"
+  },
+  "historyTable": {
+    "title": "开奖历史",
+    "total": "共 {{count}} 期",
+    "season": "期号",
+    "frontNumbers": "前区号码",
+    "backNumbers": "后区号码",
+    "date": "日期",
+    "pool": "奖池",
+    "firstPrizeCount": "一等注数",
+    "firstPrizeAmount": "一等奖金",
+    "prevPage": "上一页",
+    "pageInfo": "第 {{page}} / {{total}} 页",
+    "nextPage": "下一页"
+  },
+  "statsCards": {
+    "totalDraws": "总开奖期数",
+    "frontHottest": "前区最热",
+    "frontColdest": "前区最冷",
+    "backHottest": "后区最热",
+    "backColdest": "后区最冷",
+    "times": "次",
+    "latestDraw": "最新开奖",
+    "poolAmount": "奖池奖金",
+    "totalBets": "总投注额"
+  },
+  "trendChart": {
+    "front": "前区",
+    "back": "后区",
+    "title": "号码走势",
+    "all": "全部",
+    "recentN": "最近N期",
+    "seasonRange": "期号区间",
+    "draws": "期",
+    "startSeason": "起始期号",
+    "to": "至",
+    "endSeason": "截止期号",
+    "noMatch": "无匹配",
+    "totalDraws": "共 {{count}} 期",
+    "pos1": "第1位",
+    "pos2": "第2位",
+    "pos3": "第3位",
+    "pos4": "第4位",
+    "pos5": "第5位",
+    "back1": "后区1",
+    "back2": "后区2"
+  },
+  "frequencyChart": {
+    "front": "前区 (1-35)",
+    "back": "后区 (1-12)",
+    "title": "号码频率统计",
+    "times": "次",
+    "appearCount": "出现次数"
+  },
+  "hotCold": {
+    "front": "前区",
+    "back": "后区",
+    "recent": "近",
+    "draws": "期",
+    "title": "冷热号分析（近{{period}}期）",
+    "hotTop10": "热号 Top 10",
+    "coldTop10": "冷号 Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "还原",
+    "fullscreen": "全屏"
+  }
+}

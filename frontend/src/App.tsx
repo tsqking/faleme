@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
 import { useLotteryData } from './hooks/useLotteryData'
@@ -8,6 +9,7 @@ import { FrequencyChart } from './components/FrequencyChart'
 import { HotColdRank } from './components/HotColdRank'
 import { HistoryTable } from './components/HistoryTable'
 import { NumberSearch } from './components/NumberSearch'
+import { LanguageSwitcher } from './components/LanguageSwitcher'
 
 const AppContainer = styled.div`
   max-width: 1400px;
@@ -16,6 +18,9 @@ const AppContainer = styled.div`
 `
 
 const AppHeader = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
 
   h1 {
@@ -37,6 +42,7 @@ const StatusMessage = styled.div<{ $isError?: boolean }>`
 `
 
 function App() {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const [period, setPeriod] = useState(30)
   const { history, frequency, trend, hotCold, loading, error } = useLotteryData(page, 15, period)
@@ -46,11 +52,12 @@ function App() {
       <GlobalStyle />
       <AppContainer>
         <AppHeader>
-          <h1>大乐透数据看板</h1>
+          <h1>{t('app.title')}</h1>
+          <LanguageSwitcher />
         </AppHeader>
 
-        {loading && <StatusMessage>加载中...</StatusMessage>}
-        {error && <StatusMessage $isError>数据加载失败：{error}</StatusMessage>}
+        {loading && <StatusMessage>{t('common.loading')}</StatusMessage>}
+        {error && <StatusMessage $isError>{t('common.error')}{error}</StatusMessage>}
 
         {!loading && !error && (
           <>

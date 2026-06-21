@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { Popover } from 'antd'
 import type { CheckResult } from '../types'
@@ -176,17 +177,18 @@ export function NumberSearch() {
   const [result, setResult] = useState<CheckResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const { t } = useTranslation()
 
   const doSearch = async (f: number[], b: number[]) => {
     setLoading(true)
     setErr(null)
     try {
       const r = await fetch(`/api/check?numbers=${encodeURIComponent(fmt(f, b))}`)
-      if (!r.ok) throw new Error('查询失败')
+      if (!r.ok) throw new Error(t('numberSearch.queryFailed'))
       const d: CheckResult = await r.json()
       setResult(d)
     } catch (e) {
-      setErr(e instanceof Error ? e.message : '查询出错')
+      setErr(e instanceof Error ? e.message : t('numberSearch.queryError'))
     } finally {
       setLoading(false)
     }
@@ -246,7 +248,7 @@ export function NumberSearch() {
 
   const pop = (
     <PopContent>
-      <SectionTitle>前区（选5个）{tf.length}/5</SectionTitle>
+      <SectionTitle>{t('numberSearch.frontTitle')}{tf.length}/5</SectionTitle>
       <Grid>
         {frontNums.map(n => (
           <NumBtn key={n} $zone="front" $sel={tf.includes(n)} disabled={!tf.includes(n) && tf.length >= 5} onClick={() => toggleF(n)}>
@@ -254,7 +256,7 @@ export function NumberSearch() {
           </NumBtn>
         ))}
       </Grid>
-      <SectionTitle>后区（选2个）{tb.length}/2</SectionTitle>
+      <SectionTitle>{t('numberSearch.backTitle')}{tb.length}/2</SectionTitle>
       <Grid>
         {backNums.map(n => (
           <NumBtn key={n} $zone="back" $sel={tb.includes(n)} disabled={!tb.includes(n) && tb.length >= 2} onClick={() => toggleB(n)}>
@@ -263,10 +265,10 @@ export function NumberSearch() {
         ))}
       </Grid>
       <Actions>
-        <ClrBtn onClick={clear}>清除</ClrBtn>
+        <ClrBtn onClick={clear}>{t('numberSearch.clear')}</ClrBtn>
         <span style={{ display: 'flex', gap: 8 }}>
-          <CclBtn onClick={cancel}>取消</CclBtn>
-          <CfmBtn disabled={!ready} onClick={confirm}>确认</CfmBtn>
+          <CclBtn onClick={cancel}>{t('numberSearch.cancel')}</CclBtn>
+          <CfmBtn disabled={!ready} onClick={confirm}>{t('numberSearch.confirm')}</CfmBtn>
         </span>
       </Actions>
     </PopContent>
@@ -282,17 +284,17 @@ export function NumberSearch() {
               {(open ? tb : back).map(n => <Ball key={n} $zone="back">{String(n).padStart(2, '0')}</Ball>)}
             </BallRow>
           ) : (
-            <Placeholder>点击选择号码</Placeholder>
+            <Placeholder>{t('numberSearch.placeholder')}</Placeholder>
           )}
         </Selector>
       </Popover>
-      <QueryBtn onClick={doQuery}>查询</QueryBtn>
+      <QueryBtn onClick={doQuery}>{t('numberSearch.query')}</QueryBtn>
       {err && <ErrMsg>{err}</ErrMsg>}
       {!loading && result && (
         <ResultTag $hit={result.matched}>
           {result.matched
-            ? `中过 ${result.total_matches} 次 — ${result.matches.map(m => m.season).join(', ')}`
-            : '该号码从未中过一等奖'}
+            ? t('numberSearch.matched', { count: result.total_matches, seasons: result.matches.map(m => m.season).join(', ') })
+            : t('numberSearch.neverMatched')}
         </ResultTag>
       )}
     </SearchRow>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { HotColdResponse } from '../types'
 import { TabGroup, Tab } from '../styles/shared'
 import { FullscreenCard } from './FullscreenCard'
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function HotColdRank({ data, period, onPeriodChange }: Props) {
+  const { t } = useTranslation()
   const [zone, setZone] = useState<'front' | 'back'>('front')
   const items = zone === 'front' ? data.front : data.back
 
@@ -21,10 +23,10 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
 
   const controls = (
     <TabGroup>
-      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>前区</Tab>
-      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>后区</Tab>
+      <Tab $active={zone === 'front'} onClick={() => setZone('front')}>{t('hotCold.front')}</Tab>
+      <Tab $active={zone === 'back'} onClick={() => setZone('back')}>{t('hotCold.back')}</Tab>
       <span style={{ marginLeft: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, color: '#666' }}>近</span>
+        <span style={{ fontSize: 13, color: '#666' }}>{t('hotCold.recent')}</span>
         <input
           type="number"
           min={1}
@@ -32,16 +34,16 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
           onChange={e => onPeriodChange(Math.max(1, Number(e.target.value)))}
           style={{ width: 60, padding: '4px 8px', border: '1px solid #ddd', borderRadius: 4, fontSize: 13 }}
         />
-        <span style={{ fontSize: 13, color: '#666' }}>期</span>
+        <span style={{ fontSize: 13, color: '#666' }}>{t('hotCold.draws')}</span>
       </span>
     </TabGroup>
   )
 
   return (
-    <FullscreenCard title={`冷热号分析 (近${data.period}期)`} controls={controls}>
+    <FullscreenCard title={t('hotCold.title', { period: data.period })} controls={controls}>
       <HotColdGrid>
         <div>
-          <HotTitle>热号 Top 10</HotTitle>
+          <HotTitle>{t('hotCold.hotTop10')}</HotTitle>
           {hot.map(item => (
             <RankRow key={item.number}>
               <RankNum>{String(item.number).padStart(2, '0')}</RankNum>
@@ -53,7 +55,7 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
           ))}
         </div>
         <div>
-          <ColdTitle>冷号 Top 10</ColdTitle>
+          <ColdTitle>{t('hotCold.coldTop10')}</ColdTitle>
           {cold.map(item => (
             <RankRow key={item.number}>
               <RankNum>{String(item.number).padStart(2, '0')}</RankNum>

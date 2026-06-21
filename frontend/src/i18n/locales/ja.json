@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "大乐透データボード"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "データの読み込みに失敗しました：",
+    "dash": "-",
+    "wan": "万"
+  },
+  "numberSearch": {
+    "placeholder": "クリックして番号を選択",
+    "frontTitle": "前区（5つ選択）",
+    "backTitle": "後区（2つ選択）",
+    "clear": "クリア",
+    "cancel": "キャンセル",
+    "confirm": "確定",
+    "query": "検索",
+    "queryFailed": "検索失敗",
+    "queryError": "検索エラー",
+    "matched": "{{count}}回一致 — {{seasons}}",
+    "neverMatched": "この番号は一度も一等賞に当選していません"
+  },
+  "historyTable": {
+    "title": "抽選履歴",
+    "total": "全{{count}}回",
+    "season": "回号",
+    "frontNumbers": "前区番号",
+    "backNumbers": "後区番号",
+    "date": "日付",
+    "pool": "賞金プール",
+    "firstPrizeCount": "一等賞件数",
+    "firstPrizeAmount": "一等賞金額",
+    "prevPage": "前へ",
+    "pageInfo": "{{page}} / {{total}} ページ",
+    "nextPage": "次へ"
+  },
+  "statsCards": {
+    "totalDraws": "総抽選回数",
+    "frontHottest": "前区最も出現",
+    "frontColdest": "前区最も稀",
+    "backHottest": "後区最も出現",
+    "backColdest": "後区最も稀",
+    "times": "回",
+    "latestDraw": "最新抽選",
+    "poolAmount": "賞金プール",
+    "totalBets": "総投票額"
+  },
+  "trendChart": {
+    "front": "前区",
+    "back": "後区",
+    "title": "番号トレンド",
+    "all": "すべて",
+    "recentN": "最近N回",
+    "seasonRange": "回号範囲",
+    "draws": "回",
+    "startSeason": "開始回号",
+    "to": "〜",
+    "endSeason": "終了回号",
+    "noMatch": "一致なし",
+    "totalDraws": "全{{count}}回",
+    "pos1": "第1位",
+    "pos2": "第2位",
+    "pos3": "第3位",
+    "pos4": "第4位",
+    "pos5": "第5位",
+    "back1": "後区1",
+    "back2": "後区2"
+  },
+  "frequencyChart": {
+    "front": "前区 (1-35)",
+    "back": "後区 (1-12)",
+    "title": "番号出現頻度",
+    "times": "回",
+    "appearCount": "出現回数"
+  },
+  "hotCold": {
+    "front": "前区",
+    "back": "後区",
+    "recent": "最近",
+    "draws": "回",
+    "title": "ホット/コールド分析（最近{{period}}回）",
+    "hotTop10": "ホット Top 10",
+    "coldTop10": "コールド Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "戻す",
+    "fullscreen": "全画面"
+  }
+}

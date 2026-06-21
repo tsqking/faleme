@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 import type { HistoryResponse } from '../types'
 import { TotalLabel, Pagination } from '../styles/shared'
 import { FullscreenCard } from './FullscreenCard'
@@ -9,25 +10,25 @@ interface Props {
   onPageChange: (page: number) => void
 }
 
-function fmtMoney(n: number | null): string {
-  if (n == null) return '-'
-  return (n / 10000).toFixed(0) + '万'
-}
-
 export function HistoryTable({ data, onPageChange }: Props) {
+  const { t } = useTranslation()
+  const fmtMoney = (n: number | null): string => {
+    if (n == null) return t('common.dash')
+    return (n / 10000).toFixed(0) + t('common.wan')
+  }
   return (
-    <FullscreenCard title="开奖历史" controls={<TotalLabel>共 {data.total} 期</TotalLabel>}>
+    <FullscreenCard title={t('historyTable.title')} controls={<TotalLabel>{t('historyTable.total', { count: data.total })}</TotalLabel>}>
       <TableWrapper>
         <HistoryTableStyle>
           <thead>
             <tr>
-              <th>期号</th>
-              <th colSpan={5}>前区号码</th>
-              <th colSpan={2} className="back-th">后区号码</th>
-              <th>日期</th>
-              <th>奖池</th>
-              <th>一等注数</th>
-              <th>一等奖金</th>
+              <th>{t('historyTable.season')}</th>
+              <th colSpan={5}>{t('historyTable.frontNumbers')}</th>
+              <th colSpan={2} className="back-th">{t('historyTable.backNumbers')}</th>
+              <th>{t('historyTable.date')}</th>
+              <th>{t('historyTable.pool')}</th>
+              <th>{t('historyTable.firstPrizeCount')}</th>
+              <th>{t('historyTable.firstPrizeAmount')}</th>
             </tr>
           </thead>
           <tbody>
@@ -48,9 +49,9 @@ export function HistoryTable({ data, onPageChange }: Props) {
                     </Ball>
                   </td>
                 ))}
-                <td className="info-cell">{item.draw_date ?? '-'}</td>
+                <td className="info-cell">{item.draw_date ?? t('common.dash')}</td>
                 <td className="info-cell">{fmtMoney(item.pool)}</td>
-                <td className="info-cell">{item.first_prize_count ?? '-'}</td>
+                <td className="info-cell">{item.first_prize_count ?? t('common.dash')}</td>
                 <td className="info-cell">{fmtMoney(item.first_prize_amount)}</td>
               </tr>
             ))}
@@ -58,9 +59,9 @@ export function HistoryTable({ data, onPageChange }: Props) {
         </HistoryTableStyle>
       </TableWrapper>
       <Pagination>
-        <button disabled={data.page <= 1} onClick={() => onPageChange(data.page - 1)}>上一页</button>
-        <span>第 {data.page} / {data.total_pages} 页</span>
-        <button disabled={data.page >= data.total_pages} onClick={() => onPageChange(data.page + 1)}>下一页</button>
+        <button disabled={data.page <= 1} onClick={() => onPageChange(data.page - 1)}>{t('historyTable.prevPage')}</button>
+        <span>{t('historyTable.pageInfo', { page: data.page, total: data.total_pages })}</span>
+        <button disabled={data.page >= data.total_pages} onClick={() => onPageChange(data.page + 1)}>{t('historyTable.nextPage')}</button>
       </Pagination>
     </FullscreenCard>
   )

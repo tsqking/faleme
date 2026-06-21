@@ -1,0 +1,90 @@
+{
+  "app": {
+    "title": "Lotto Dashboard"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Failed to load data: ",
+    "dash": "-",
+    "wan": "0k"
+  },
+  "numberSearch": {
+    "placeholder": "Click to select numbers",
+    "frontTitle": "Front (pick 5)",
+    "backTitle": "Back (pick 2)",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "query": "Search",
+    "queryFailed": "Query failed",
+    "queryError": "Query error",
+    "matched": "Matched {{count}} times — {{seasons}}",
+    "neverMatched": "This number has never won first prize"
+  },
+  "historyTable": {
+    "title": "Draw History",
+    "total": "{{count}} draws total",
+    "season": "Issue",
+    "frontNumbers": "Front Numbers",
+    "backNumbers": "Back Numbers",
+    "date": "Date",
+    "pool": "Pool",
+    "firstPrizeCount": "1st Prize Count",
+    "firstPrizeAmount": "1st Prize Amount",
+    "prevPage": "Previous",
+    "pageInfo": "Page {{page}} / {{total}}",
+    "nextPage": "Next"
+  },
+  "statsCards": {
+    "totalDraws": "Total Draws",
+    "frontHottest": "Hottest Front",
+    "frontColdest": "Coldest Front",
+    "backHottest": "Hottest Back",
+    "backColdest": "Coldest Back",
+    "times": "times",
+    "latestDraw": "Latest Draw",
+    "poolAmount": "Prize Pool",
+    "totalBets": "Total Bets"
+  },
+  "trendChart": {
+    "front": "Front",
+    "back": "Back",
+    "title": "Number Trends",
+    "all": "All",
+    "recentN": "Recent N",
+    "seasonRange": "Issue Range",
+    "draws": "draws",
+    "startSeason": "Start Issue",
+    "to": "to",
+    "endSeason": "End Issue",
+    "noMatch": "No match",
+    "totalDraws": "{{count}} draws total",
+    "pos1": "Pos 1",
+    "pos2": "Pos 2",
+    "pos3": "Pos 3",
+    "pos4": "Pos 4",
+    "pos5": "Pos 5",
+    "back1": "Back 1",
+    "back2": "Back 2"
+  },
+  "frequencyChart": {
+    "front": "Front (1-35)",
+    "back": "Back (1-12)",
+    "title": "Number Frequency",
+    "times": "times",
+    "appearCount": "Count"
+  },
+  "hotCold": {
+    "front": "Front",
+    "back": "Back",
+    "recent": "Recent ",
+    "draws": " draws",
+    "title": "Hot/Cold Analysis (Last {{period}} draws)",
+    "hotTop10": "Hot Top 10",
+    "coldTop10": "Cold Top 10"
+  },
+  "fullscreenCard": {
+    "restore": "Restore",
+    "fullscreen": "Fullscreen"
+  }
+}

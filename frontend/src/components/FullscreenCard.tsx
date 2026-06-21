@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { ChartSection, ChartHeader } from '../styles/shared'
 
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function FullscreenCard({ title, controls, children }: Props) {
+  const { t } = useTranslation()
   const [fs, setFs] = useState(false)
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
@@ -32,7 +34,7 @@ export function FullscreenCard({ title, controls, children }: Props) {
         <Overlay>
           <OverlayHeader>
             <h2>{title}</h2>
-            <CloseButton onClick={() => setFs(false)} title="还原">✕</CloseButton>
+            <CloseButton onClick={() => setFs(false)} title={t('fullscreenCard.restore')}>✕</CloseButton>
           </OverlayHeader>
           <OverlayBody>{children}</OverlayBody>
         </Overlay>
@@ -42,7 +44,7 @@ export function FullscreenCard({ title, controls, children }: Props) {
           <h3>{title}</h3>
           <HeaderRight>
             {controls}
-            <ExpandButton onClick={() => setFs(true)} title="全屏">⛶</ExpandButton>
+            <ExpandButton onClick={() => setFs(true)} title={t('fullscreenCard.fullscreen')}>⛶</ExpandButton>
           </HeaderRight>
         </ChartHeader>
         {children}
