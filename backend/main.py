@@ -5,6 +5,8 @@ from typing import Any
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.scraper import refresh_data
+
 app = FastAPI(title="大乐透数据 API")
 
 app.add_middleware(
@@ -15,6 +17,16 @@ app.add_middleware(
 )
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data.json")
+
+
+@app.on_event("startup")
+def startup():
+    if not os.path.exists(DATA_FILE):
+        print("data.json 不存在，正在从网络获取...")
+        refresh_data()
+        print("数据获取完成")
+    else:
+        print("使用本地缓存 data.json")
 
 
 def _load_data() -> list[dict[str, Any]]:
@@ -83,6 +95,24 @@ def get_trend():
             "pos7": d["back"][1],
         })
     return {"items": items, "total": len(items)}
+
+
+@app.get("/api/check")
+def check_numbers(numbers: str = Query(..., description="7个空格分隔的号码，如 '02 06 19 28 32 05 12'")):
+    data = _load_data()
+    results = []
+    for item in data:
+        if item["number"] == numbers.strip():
+            results.append({
+                "season": item["season"],
+                "number": item["number"],
+            })
+    return {
+        "numbers": numbers,
+        "matched": len(results) > 0,
+        "matches": results,
+        "total_matches": len(results),
+    }
 
 
 @app.get("/api/stats/hot-cold")

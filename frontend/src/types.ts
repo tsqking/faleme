@@ -48,3 +48,10 @@ export interface HotColdResponse {
   front: HotColdItem[]
   back: HotColdItem[]
 }
+
+export interface CheckResult {
+  numbers: string
+  matched: boolean
+  matches: { season: string; number: string }[]
+  total_matches: number
+}

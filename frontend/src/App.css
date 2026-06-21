@@ -268,3 +268,110 @@ body {
   font-size: 13px;
   color: #999;
 }
+
+.search-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.search-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #1a1a2e;
+}
+
+.search-btn {
+  padding: 10px 24px;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.search-btn:hover {
+  opacity: 0.85;
+}
+
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-balls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.search-ball {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.search-ball.front-ball.small { background: #6bcb77; color: #fff; }
+.search-ball.front-ball.mid { background: #f39c12; color: #fff; }
+.search-ball.front-ball.big { background: #e74c3c; color: #fff; }
+.search-ball.back-ball { background: #4d96ff; color: #fff; }
+
+.search-error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.search-result {
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.search-result.hit {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+}
+
+.search-result.miss {
+  background: #fff3e0;
+  border: 1px solid #ffcc80;
+}
+
+.result-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.result-matches {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.8;
+}
+
+.match-item {
+  padding: 2px 0;
+}

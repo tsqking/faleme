@@ -5,6 +5,7 @@ import { TrendChart } from './components/TrendChart'
 import { FrequencyChart } from './components/FrequencyChart'
 import { HotColdRank } from './components/HotColdRank'
 import { HistoryTable } from './components/HistoryTable'
+import { NumberSearch } from './components/NumberSearch'
 import './App.css'
 
 function App() {
@@ -49,6 +50,10 @@ function App() {
       <div className="charts-row">
         {hotCold && <HotColdRank data={hotCold} />}
         {history && <HistoryTable data={history} onPageChange={setPage} />}
+      </div>
+
+      <div className="charts-row">
+        <NumberSearch />
       </div>
     </div>
   )
