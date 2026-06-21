@@ -11,4 +11,15 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes('node_modules/react')) return 'vendor'
+          if (id.includes('node_modules/antd')) return 'ui'
+          if (id.includes('node_modules/recharts')) return 'charts'
+        },
+      },
+    },
+  },
 })
