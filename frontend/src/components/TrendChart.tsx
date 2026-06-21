@@ -50,6 +50,20 @@ const FilterInput = styled.input`
   }
 `
 
+const FilterSelect = styled.select`
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  outline: none;
+  background: #fff;
+  max-height: 200px;
+
+  &:focus {
+    border-color: #1a1a2e;
+  }
+`
+
 const CountLabel = styled.span`
   font-size: 12px;
   color: #999;
@@ -64,6 +78,12 @@ export function TrendChart({ data }: Props) {
   const [endSeason, setEndSeason] = useState('')
 
   const positions = zone === 'front' ? ['pos1', 'pos2', 'pos3', 'pos4', 'pos5'] : ['pos6', 'pos7']
+
+  const seasons = useMemo(() => {
+    const set = new Set<string>()
+    for (const d of data.items) set.add(d.season)
+    return Array.from(set).sort().reverse()
+  }, [data])
 
   const filteredItems = useMemo(() => {
     let items = data.items
@@ -106,9 +126,15 @@ export function TrendChart({ data }: Props) {
         )}
         {filterMode === 'range' && (
           <>
-            <FilterInput placeholder="起始期号" value={startSeason} onChange={e => setStartSeason(e.target.value)} />
+            <FilterSelect value={startSeason} onChange={e => setStartSeason(e.target.value)}>
+              <option value="">起始期号</option>
+              {seasons.map(s => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
             <span style={{fontSize: 12, color: '#999'}}>至</span>
-            <FilterInput placeholder="截止期号" value={endSeason} onChange={e => setEndSeason(e.target.value)} />
+            <FilterSelect value={endSeason} onChange={e => setEndSeason(e.target.value)}>
+              <option value="">截止期号</option>
+              {seasons.map(s => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
           </>
         )}
         <CountLabel>共 {filteredItems.length} 期</CountLabel>
