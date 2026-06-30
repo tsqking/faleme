@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { Popover } from 'antd'
+import { InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import type { CheckResult } from '../types'
 
 const SearchRow = styled.div`
@@ -151,12 +152,24 @@ const QueryBtn = styled.button`
 `
 
 const ResultTag = styled.span<{ $hit: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: ${p => p.$hit ? '#e8f5e9' : '#fff3e0'};
-  border: 1px solid ${p => p.$hit ? '#a5d6a7' : '#ffcc80'};
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: ${p => p.$hit ? '#f0fdf4' : '#f8fafc'};
+  border: 1px solid ${p => p.$hit ? '#bbf7d0' : '#e2e8f0'};
+  color: ${p => p.$hit ? '#166534' : '#475569'};
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
   white-space: nowrap;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
 `
 
 const ErrMsg = styled.span`
@@ -292,6 +305,7 @@ export function NumberSearch() {
       {err && <ErrMsg>{err}</ErrMsg>}
       {!loading && result && (
         <ResultTag $hit={result.matched}>
+          {result.matched ? <CheckCircleOutlined /> : <InfoCircleOutlined />}
           {result.matched
             ? t('numberSearch.matched', { count: result.total_matches, seasons: result.matches.map(m => m.season).join(', ') })
             : t('numberSearch.neverMatched')}
