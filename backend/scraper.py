@@ -13,8 +13,11 @@ DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json"
 REQUEST_TIMEOUT = 30
 
 
-def _parse_int(text: str) -> int:
-    return int(text.replace(",", ""))
+def _parse_int(text: str) -> int | None:
+    value = text.replace(",", "").strip()
+    if not value or value == "-":
+        return None
+    return int(value)
 
 def refresh_data() -> list[dict[str, Any]]:
     url = "https://datachart.500star.com/dlt/history/newinc/history.php"
@@ -48,9 +51,9 @@ def refresh_data() -> list[dict[str, Any]]:
                       f"{tds[4].get_text(strip=True)} {tds[5].get_text(strip=True)} "
                       f"{tds[6].get_text(strip=True)} {tds[7].get_text(strip=True)}",
             "pool": _parse_int(tds[8].get_text(strip=True)),
-            "first_prize_count": int(tds[9].get_text(strip=True)),
+            "first_prize_count": _parse_int(tds[9].get_text(strip=True)),
             "first_prize_amount": _parse_int(tds[10].get_text(strip=True)),
-            "second_prize_count": int(tds[11].get_text(strip=True)),
+            "second_prize_count": _parse_int(tds[11].get_text(strip=True)),
             "second_prize_amount": _parse_int(tds[12].get_text(strip=True)),
             "total_bets": _parse_int(tds[13].get_text(strip=True)),
             "draw_date": tds[14].get_text(strip=True),

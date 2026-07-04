@@ -17,6 +17,11 @@ FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "
 _data_cache: list[dict[str, Any]] | None = None
 
 
+def _invalidate_data_cache() -> None:
+    global _data_cache
+    _data_cache = None
+
+
 def _load_raw() -> Any:
     with open(DATA_FILE, encoding="utf-8") as f:
         return json.load(f)
@@ -31,6 +36,16 @@ def _load_data() -> list[dict[str, Any]]:
     return _data_cache
 
 
+def _number_parts(numbers: str) -> tuple[tuple[int, ...], tuple[int, ...]] | None:
+    try:
+        parts = tuple(int(x) for x in numbers.split())
+    except ValueError:
+        return None
+    if len(parts) != 7:
+        return None
+    return tuple(sorted(parts[:5])), tuple(sorted(parts[5:]))
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     today = date.today().isoformat()
@@ -39,6 +54,7 @@ async def lifespan(app: FastAPI):
         print("data.json 不存在，正在从网络获取...")
         try:
             refresh_data()
+            _invalidate_data_cache()
             print("数据获取完成")
         except Exception as e:
             print(f"数据获取失败: {e}")
@@ -48,6 +64,7 @@ async def lifespan(app: FastAPI):
             print("data.json 格式较旧，正在重新抓取...")
             try:
                 refresh_data()
+                _invalidate_data_cache()
                 print("数据更新完成")
             except Exception as e:
                 print(f"数据更新失败，使用旧数据: {e}")
@@ -55,6 +72,7 @@ async def lifespan(app: FastAPI):
             print(f"数据日期 {raw.get('_fetched_date')} 与今天 {today} 不一致，正在重新抓取...")
             try:
                 refresh_data()
+                _invalidate_data_cache()
                 print("数据更新完成")
             except Exception as e:
                 print(f"数据更新失败，使用旧数据: {e}")
@@ -68,7 +86,10 @@ app = FastAPI(title="大乐透数据 API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=os.environ.get(
+        "CORS_ALLOW_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(","),
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -159,9 +180,17 @@ def get_trend(
 @app.get("/api/check")
 def check_numbers(numbers: str = Query(..., description="7个空格分隔的号码，如 '02 06 19 28 32 05 12'")):
     data = _load_data()
+    query_parts = _number_parts(numbers)
     results = []
+    if query_parts is None:
+        return {
+            "numbers": numbers,
+            "matched": False,
+            "matches": results,
+            "total_matches": 0,
+        }
     for item in data:
-        if item["number"] == numbers.strip():
+        if _number_parts(item["number"]) == query_parts:
             results.append({
                 "season": item["season"],
                 "number": item["number"],
@@ -176,8 +205,7 @@ def check_numbers(numbers: str = Query(..., description="7个空格分隔的号�
 
 @app.get("/api/stats/hot-cold")
 def get_hot_cold(period: int = Query(30, ge=1)):
-    data = _load_data()
-    data.sort(key=lambda x: x["season"], reverse=True)
+    data = sorted(_load_data(), key=lambda x: x["season"], reverse=True)
     recent = data[:period]
 
     front_counts: dict[int, int] = {i: 0 for i in range(1, 36)}

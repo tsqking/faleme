@@ -37,6 +37,7 @@ export function useLotteryData(page: number, pageSize: number = 15, period: numb
       if (!initialLoad.current) {
         if (period !== prevPeriod.current) {
           try {
+            setError(null)
             const hc = await fetch(`/api/stats/hot-cold?period=${period}`, { signal }).then<HotColdResponse>(r => parseJson(r))
             if (!signal.aborted) { setHotCold(hc); prevPeriod.current = period }
           } catch (e) {
@@ -44,6 +45,7 @@ export function useLotteryData(page: number, pageSize: number = 15, period: numb
           }
         } else if (page !== prevPage.current) {
           try {
+            setError(null)
             const h = await fetch(`/api/history?page=${page}&page_size=${pageSize}`, { signal }).then<HistoryResponse>(r => parseJson(r))
             if (!signal.aborted) { setHistory(h); prevPage.current = page }
           } catch (e) {
