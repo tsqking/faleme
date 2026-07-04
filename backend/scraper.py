@@ -9,7 +9,7 @@ import requests
 
 from common import utils
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data.json")
+DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
 REQUEST_TIMEOUT = 30
 
 

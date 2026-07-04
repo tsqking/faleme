@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.scraper import refresh_data
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data.json")
+DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
 FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")
 
 _data_cache: list[dict[str, Any]] | None = None

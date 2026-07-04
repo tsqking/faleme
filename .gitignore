@@ -1,4 +1,4 @@
-data.json
+backend/data.json
 .venv/
 .idea/
 __pycache__/
