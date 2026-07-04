@@ -4,12 +4,15 @@ from contextlib import asynccontextmanager
 from datetime import date
 from typing import Any
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from backend.scraper import refresh_data
 
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data.json")
+FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")
 
 _data_cache: list[dict[str, Any]] | None = None
 
@@ -195,3 +198,18 @@ def get_hot_cold(period: int = Query(30, ge=1)):
         "front": [{"number": k, "count": v} for k, v in front_sorted],
         "back": [{"number": k, "count": v} for k, v in back_sorted],
     }
+
+
+# ---- Static file serving for production ----
+
+_INDEX_HTML = os.path.join(FRONTEND_DIST, "index.html")
+
+if os.path.isfile(_INDEX_HTML):
+    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="static-assets")
+
+    @app.get("/{path:path}")
+    async def serve_spa(request: Request, path: str):
+        file_path = os.path.join(FRONTEND_DIST, path)
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse(_INDEX_HTML)
