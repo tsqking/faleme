@@ -19,7 +19,8 @@
     "queryFailed": "검색 실패",
     "queryError": "검색 오류",
     "matched": "{{count}}회 일치 — {{seasons}}",
-    "neverMatched": "이 번호는 1등에 당첨된 적이 없습니다"
+    "neverMatched": "이 번호는 1등에 당첨된 적이 없습니다",
+    "selectHint": "번호를 모두 선택해 주세요 (앞 구역 {{front}}개 + 뒤 구역 {{back}}개 남음)"
   },
   "historyTable": {
     "title": "추첨 기록",

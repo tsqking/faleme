@@ -19,7 +19,8 @@
     "queryFailed": "Échec de la recherche",
     "queryError": "Erreur de recherche",
     "matched": "Correspond {{count}} fois — {{seasons}}",
-    "neverMatched": "Ce numéro n'a jamais gagné le premier prix"
+    "neverMatched": "Ce numéro n'a jamais gagné le premier prix",
+    "selectHint": "Veuillez d'abord sélectionner tous les numéros ({{front}} avant + {{back}} arrière restants)"
   },
   "historyTable": {
     "title": "Historique des Tirages",

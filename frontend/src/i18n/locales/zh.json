@@ -19,7 +19,8 @@
     "queryFailed": "查询失败",
     "queryError": "查询出错",
     "matched": "中过 {{count}} 次 — {{seasons}}",
-    "neverMatched": "该号码从未中过一等奖"
+    "neverMatched": "该号码从未中过一等奖",
+    "selectHint": "请先选满号码（前区还差{{front}}个，后区还差{{back}}个）"
   },
   "historyTable": {
     "title": "开奖历史",

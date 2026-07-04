@@ -1,5 +1,6 @@
 import json
 import os
+from contextlib import asynccontextmanager
 from datetime import date
 from typing import Any
 
@@ -8,39 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.scraper import refresh_data
 
-app = FastAPI(title="大乐透数据 API")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data.json")
 
-
-@app.on_event("startup")
-def startup():
-    today = date.today().isoformat()
-
-    if not os.path.exists(DATA_FILE):
-        print("data.json 不存在，正在从网络获取...")
-        refresh_data()
-        print("数据获取完成")
-        return
-
-    raw = _load_raw()
-    if isinstance(raw, list):
-        print("data.json 格式较旧，正在重新抓取...")
-        refresh_data()
-        print("数据更新完成")
-    elif raw.get("_fetched_date") != today:
-        print(f"数据日期 {raw.get('_fetched_date')} 与今天 {today} 不一致，正在重新抓取...")
-        refresh_data()
-        print("数据更新完成")
-    else:
-        print(f"数据已是最新 ({today})")
+_data_cache: list[dict[str, Any]] | None = None
 
 
 def _load_raw() -> Any:
@@ -49,10 +20,55 @@ def _load_raw() -> Any:
 
 
 def _load_data() -> list[dict[str, Any]]:
+    global _data_cache
+    if _data_cache is not None:
+        return _data_cache
     raw = _load_raw()
-    if isinstance(raw, list):
-        return raw
-    return raw["data"]
+    _data_cache = raw["data"] if isinstance(raw, dict) else raw
+    return _data_cache
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    today = date.today().isoformat()
+
+    if not os.path.exists(DATA_FILE):
+        print("data.json 不存在，正在从网络获取...")
+        try:
+            refresh_data()
+            print("数据获取完成")
+        except Exception as e:
+            print(f"数据获取失败: {e}")
+    else:
+        raw = _load_raw()
+        if isinstance(raw, list):
+            print("data.json 格式较旧，正在重新抓取...")
+            try:
+                refresh_data()
+                print("数据更新完成")
+            except Exception as e:
+                print(f"数据更新失败，使用旧数据: {e}")
+        elif raw.get("_fetched_date") != today:
+            print(f"数据日期 {raw.get('_fetched_date')} 与今天 {today} 不一致，正在重新抓取...")
+            try:
+                refresh_data()
+                print("数据更新完成")
+            except Exception as e:
+                print(f"数据更新失败，使用旧数据: {e}")
+        else:
+            print(f"数据已是最新 ({today})")
+
+    yield
+
+
+app = FastAPI(title="大乐透数据 API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _parse_numbers(item: dict[str, Any]) -> dict[str, Any]:
@@ -108,9 +124,9 @@ def get_frequency():
 
 @app.get("/api/stats/trend")
 def get_trend(
-    start_season: str = Query(None, description="起始期号"),
-    end_season: str = Query(None, description="截止期号"),
-    limit: int = Query(None, ge=1, description="最近N条"),
+    start_season: str | None = Query(None, description="起始期号"),
+    end_season: str | None = Query(None, description="截止期号"),
+    limit: int | None = Query(None, ge=1, description="最近N条"),
 ):
     data = [_parse_numbers(d) for d in _load_data()]
     data.sort(key=lambda x: x["season"])
@@ -161,8 +177,8 @@ def get_hot_cold(period: int = Query(30, ge=1)):
     data.sort(key=lambda x: x["season"], reverse=True)
     recent = data[:period]
 
-    front_counts: dict[int, int] = {}
-    back_counts: dict[int, int] = {}
+    front_counts: dict[int, int] = {i: 0 for i in range(1, 36)}
+    back_counts: dict[int, int] = {i: 0 for i in range(1, 13)}
 
     for item in recent:
         parts = [int(x) for x in item["number"].split()]

@@ -57,9 +57,9 @@ function App() {
         </AppHeader>
 
         {loading && <StatusMessage>{t('common.loading')}</StatusMessage>}
-        {error && <StatusMessage $isError>{t('common.error')}{error}</StatusMessage>}
+        {error && !loading && <StatusMessage $isError>{t('common.error')}{error}</StatusMessage>}
 
-        {!loading && !error && (
+        {!loading && (
           <>
             <NumberSearch />
 

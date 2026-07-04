@@ -19,7 +19,8 @@
     "queryFailed": "検索失敗",
     "queryError": "検索エラー",
     "matched": "{{count}}回一致 — {{seasons}}",
-    "neverMatched": "この番号は一度も一等賞に当選していません"
+    "neverMatched": "この番号は一度も一等賞に当選していません",
+    "selectHint": "まず番号を選んでください（前区あと{{front}}個、後区あと{{back}}個）"
   },
   "historyTable": {
     "title": "抽選履歴",

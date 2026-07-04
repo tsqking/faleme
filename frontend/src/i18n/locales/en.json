@@ -19,7 +19,8 @@
     "queryFailed": "Query failed",
     "queryError": "Query error",
     "matched": "Matched {{count}} times — {{seasons}}",
-    "neverMatched": "This number has never won first prize"
+    "neverMatched": "This number has never won first prize",
+    "selectHint": "Please select all numbers first ({{front}} front + {{back}} back remaining)"
   },
   "historyTable": {
     "title": "Draw History",

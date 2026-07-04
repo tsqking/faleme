@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { Popover } from 'antd'
+import { Popover, message } from 'antd'
 import { InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import type { CheckResult } from '../types'
 
@@ -241,6 +241,8 @@ export function NumberSearch() {
   const doQuery = () => {
     if (front.length === 5 && back.length === 2) {
       doSearch(front, back)
+    } else {
+      message.warning(t('numberSearch.selectHint', { front: 5 - front.length, back: 2 - back.length }))
     }
   }
 
