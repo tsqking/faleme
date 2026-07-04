@@ -55,6 +55,7 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
+          flexWrap: 'wrap',
         }}
       >
         <span style={{ fontSize: 13, color: '#666' }}>

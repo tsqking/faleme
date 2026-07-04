@@ -5,6 +5,11 @@ export const ChartSection = styled.div`
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+  @media (max-width: 768px) {
+    padding: 14px 12px;
+    border-radius: 8px;
+  }
 `
 
 export const ChartHeader = styled.div`
@@ -12,16 +17,27 @@ export const ChartHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
+  gap: 8px;
 
   h3 {
     font-size: 16px;
     font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+
+    h3 {
+      font-size: 14px;
+    }
   }
 `
 
 export const TabGroup = styled.div`
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 `
 
 export const Tab = styled.button<{ $active?: boolean }>`

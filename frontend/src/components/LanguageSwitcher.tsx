@@ -4,6 +4,7 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 `
 
 const LangBtn = styled.button<{ $active: boolean }>`

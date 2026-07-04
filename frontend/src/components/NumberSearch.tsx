@@ -14,8 +14,8 @@ const SearchRow = styled.div`
 `
 
 const Selector = styled.div`
-  flex: 0 0 50%;
-  min-width: 200px;
+  flex: 1 1 200px;
+  min-width: 0;
   padding: 8px 14px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -55,7 +55,8 @@ const Placeholder = styled.span`
 `
 
 const PopContent = styled.div`
-  width: 420px;
+  max-width: 420px;
+  width: calc(100vw - 32px);
 `
 
 const SectionTitle = styled.div`
@@ -91,6 +92,12 @@ const NumBtn = styled.button<{ $sel?: boolean; $zone: string }>`
   &:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
   }
 `
 
@@ -165,10 +172,19 @@ const ResultTag = styled.span<{ $hit: boolean }>`
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    white-space: normal;
+    font-size: 12px;
+    width: 100%;
   }
 `
 

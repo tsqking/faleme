@@ -97,6 +97,14 @@ const OverlayHeader = styled.div`
     font-weight: 600;
     color: #1a1a2e;
   }
+
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+
+    h2 {
+      font-size: 16px;
+    }
+  }
 `
 
 const CloseButton = styled.button`
@@ -123,4 +131,8 @@ const OverlayBody = styled.div`
   flex: 1;
   padding: 24px;
   overflow: auto;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 `

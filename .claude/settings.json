@@ -1,5 +1,5 @@
 {
   "permissions": {
-    "allow": ["read", "write", "execute"]
+    "allow": ["Read", "Write", "Execute"]
   }
 }

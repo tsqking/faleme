@@ -15,6 +15,10 @@ const AppContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 `
 
 const AppHeader = styled.header`
@@ -22,16 +26,30 @@ const AppHeader = styled.header`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  gap: 12px;
 
   h1 {
     font-size: 24px;
     font-weight: 700;
     color: #1a1a2e;
   }
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+
+    h1 {
+      font-size: 18px;
+    }
+  }
 `
 
 const FullRow = styled.div`
   margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 16px;
+  }
 `
 
 const StatusMessage = styled.div<{ $isError?: boolean }>`
