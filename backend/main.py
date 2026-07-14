@@ -57,7 +57,7 @@ async def lifespan(app: FastAPI):
             _invalidate_data_cache()
             print("数据获取完成")
         except Exception as e:
-            print(f"数据获取失败: {e}")
+            raise RuntimeError(f"数据获取失败: {e}") from e
     else:
         raw = _load_raw()
         if isinstance(raw, list):
