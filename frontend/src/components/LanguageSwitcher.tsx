@@ -25,11 +25,6 @@ const LangBtn = styled.button<{ $active: boolean }>`
 const langs = [
   { code: 'zh', label: '中文' },
   { code: 'en', label: 'EN' },
-  { code: 'ja', label: '日' },
-  { code: 'ko', label: '한' },
-  { code: 'ru', label: 'RU' },
-  { code: 'th', label: 'TH' },
-  { code: 'fr', label: 'FR' },
 ]
 
 export function LanguageSwitcher() {
