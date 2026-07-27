@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components'
 
 export const ChartSection = styled.div`
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-card);
 
   @media (max-width: 768px) {
     padding: 14px 12px;
@@ -42,17 +42,17 @@ export const TabGroup = styled.div`
 
 export const Tab = styled.button<{ $active?: boolean }>`
   padding: 4px 12px;
-  border: 1px solid #ddd;
-  background: ${p => p.$active ? '#1a1a2e' : '#fff'};
-  color: ${p => p.$active ? '#fff' : '#666'};
-  border-color: ${p => p.$active ? '#1a1a2e' : '#ddd'};
+  border: 1px solid var(--color-border);
+  background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-surface)'};
+  color: ${p => p.$active ? 'var(--color-on-primary)' : 'var(--color-text-secondary)'};
+  border-color: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-border)'};
   border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: ${p => p.$active ? '#1a1a2e' : '#f5f5f5'};
+    background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-hover)'};
   }
 `
 
@@ -65,15 +65,16 @@ export const Pagination = styled.div`
 
   button {
     padding: 6px 16px;
-    border: 1px solid #ddd;
-    background: #fff;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
+    color: var(--color-text);
     transition: all 0.2s;
 
     &:hover:not(:disabled) {
-      background: #f5f5f5;
+      background: var(--color-hover);
     }
 
     &:disabled {
@@ -84,13 +85,13 @@ export const Pagination = styled.div`
 
   span {
     font-size: 13px;
-    color: #666;
+    color: var(--color-text-secondary);
   }
 `
 
 export const TotalLabel = styled.span`
   font-size: 13px;
-  color: #999;
+  color: var(--color-text-tertiary);
 `
 
 export const Ball = styled.span<{ $zone?: 'front' | 'back'; $size?: 'small' | 'mid' | 'big' }>`

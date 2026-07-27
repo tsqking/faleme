@@ -87,5 +87,10 @@
   "fullscreenCard": {
     "restore": "Restore",
     "fullscreen": "Fullscreen"
+  },
+  "theme": {
+    "light": "Light",
+    "system": "System",
+    "dark": "Dark"
   }
 }

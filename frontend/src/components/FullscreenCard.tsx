@@ -62,18 +62,18 @@ const HeaderRight = styled.div`
 
 const ExpandButton = styled.button`
   background: none;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   cursor: pointer;
   padding: 2px 6px;
   font-size: 14px;
-  color: #999;
+  color: var(--color-text-tertiary);
   transition: all 0.2s;
   line-height: 1;
 
   &:hover {
-    color: #1a1a2e;
-    border-color: #1a1a2e;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
   }
 `
 
@@ -81,7 +81,7 @@ const Overlay = styled.div`
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: #fff;
+  background: var(--color-surface);
   display: flex;
   flex-direction: column;
 `
@@ -91,12 +91,12 @@ const OverlayHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border-light);
 
   h2 {
     font-size: 18px;
     font-weight: 600;
-    color: #1a1a2e;
+    color: var(--color-primary);
   }
 
   @media (max-width: 768px) {
@@ -113,7 +113,7 @@ const CloseButton = styled.button`
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #666;
+  color: var(--color-text-secondary);
   width: 36px;
   height: 36px;
   display: flex;
@@ -123,8 +123,8 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background: #f5f5f5;
-    color: #333;
+    background: var(--color-hover);
+    color: var(--color-text);
   }
 `
 

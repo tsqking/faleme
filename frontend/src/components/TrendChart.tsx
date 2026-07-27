@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import type { TrendResponse } from '../types'
 import { TabGroup, Tab } from '../styles/shared'
 import { FullscreenCard } from './FullscreenCard'
+import { useChartTheme } from '../hooks/useChartTheme'
 
 interface Props {
   data: TrendResponse
@@ -25,35 +26,37 @@ const FilterBar = styled.div`
 
 const FilterTab = styled.button<{ $active?: boolean }>`
   padding: 3px 10px;
-  border: 1px solid #ddd;
-  background: ${p => p.$active ? '#1a1a2e' : '#fff'};
-  color: ${p => p.$active ? '#fff' : '#666'};
+  border: 1px solid var(--color-border);
+  background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-surface)'};
+  color: ${p => p.$active ? 'var(--color-on-primary)' : 'var(--color-text-secondary)'};
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: ${p => p.$active ? '#1a1a2e' : '#f5f5f5'};
+    background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-hover)'};
   }
 `
 
 const FilterInput = styled.input`
   width: 80px;
   padding: 4px 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 12px;
+  background: var(--color-input-bg);
+  color: var(--color-text);
   outline: none;
 
   &:focus {
-    border-color: #1a1a2e;
+    border-color: var(--color-primary);
   }
 `
 
 const CountLabel = styled.span`
   font-size: 12px;
-  color: #999;
+  color: var(--color-text-tertiary);
   margin-left: auto;
 `
 
@@ -66,13 +69,15 @@ const SeasonWrapper = styled.div`
 const SeasonInput = styled.input`
   width: 120px;
   padding: 4px 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 12px;
+  background: var(--color-input-bg);
+  color: var(--color-text);
   outline: none;
 
   &:focus {
-    border-color: #1a1a2e;
+    border-color: var(--color-primary);
   }
 `
 
@@ -82,8 +87,8 @@ const Dropdown = styled.div`
   left: 0;
   right: 0;
   z-index: 10;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-top: none;
   border-radius: 0 0 4px 4px;
   max-height: 240px;
@@ -95,18 +100,18 @@ const Option = styled.div<{ $active?: boolean }>`
   padding: 4px 8px;
   font-size: 12px;
   cursor: pointer;
-  background: ${p => p.$active ? '#1a1a2e' : '#fff'};
-  color: ${p => p.$active ? '#fff' : '#333'};
+  background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-surface)'};
+  color: ${p => p.$active ? 'var(--color-on-primary)' : 'var(--color-text)'};
 
   &:hover {
-    background: ${p => p.$active ? '#1a1a2e' : '#f0f0f0'};
+    background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-hover)'};
   }
 `
 
 const Empty = styled.div`
   padding: 8px;
   font-size: 12px;
-  color: #999;
+  color: var(--color-text-tertiary);
   text-align: center;
 `
 
@@ -170,6 +175,7 @@ function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectPro
 
 export function TrendChart({ data }: Props) {
   const { t } = useTranslation()
+  const { gridStroke, tickFill, tooltipStyle } = useChartTheme()
   const LABELS = [t('trendChart.pos1'), t('trendChart.pos2'), t('trendChart.pos3'), t('trendChart.pos4'), t('trendChart.pos5'), t('trendChart.back1'), t('trendChart.back2')]
   const [zone, setZone] = useState<'front' | 'back'>('front')
   const [filterMode, setFilterMode] = useState<FilterMode>('none')
@@ -221,13 +227,13 @@ export function TrendChart({ data }: Props) {
         {filterMode === 'limit' && (
           <>
             <FilterInput type="number" min={1} value={limitInput} onChange={e => setLimitInput(e.target.value)} />
-            <span style={{fontSize: 12, color: '#999'}}>{t('trendChart.draws')}</span>
+            <span style={{fontSize: 12, color: 'var(--color-text-tertiary)'}}>{t('trendChart.draws')}</span>
           </>
         )}
         {filterMode === 'range' && (
           <>
             <SeasonSelect placeholder={t('trendChart.startSeason')} value={startSeason} seasons={seasons} onChange={setStartSeason} />
-            <span style={{fontSize: 12, color: '#999'}}>{t('trendChart.to')}</span>
+            <span style={{fontSize: 12, color: 'var(--color-text-tertiary)'}}>{t('trendChart.to')}</span>
             <SeasonSelect placeholder={t('trendChart.endSeason')} value={endSeason} seasons={seasons} onChange={setEndSeason} />
           </>
         )}
@@ -235,10 +241,10 @@ export function TrendChart({ data }: Props) {
       </FilterBar>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-          <XAxis dataKey="season" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
-          <YAxis domain={zone === 'front' ? [0, 35] : [0, 12]} tick={{ fontSize: 12 }} />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+          <XAxis dataKey="season" tick={{ fontSize: 10, fill: tickFill }} interval="preserveStartEnd" />
+          <YAxis domain={zone === 'front' ? [0, 35] : [0, 12]} tick={{ fontSize: 12, fill: tickFill }} />
+          <Tooltip contentStyle={tooltipStyle} />
           <Legend />
           {positions.map((pos, i) => (
             <Line

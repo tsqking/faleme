@@ -10,11 +10,12 @@ export const HistoryTableStyle = styled.table`
   font-size: 13px;
 
   th {
-    background: #f8f9fa;
+    background: var(--color-surface-alt);
     padding: 10px 8px;
     text-align: left;
     font-weight: 600;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--color-border-light);
+    color: var(--color-text);
   }
 
   th.back-th {
@@ -24,18 +25,19 @@ export const HistoryTableStyle = styled.table`
   td {
     padding: 8px 6px;
     text-align: left;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--color-border-light);
+    color: var(--color-text);
   }
 
   .season-cell {
     font-weight: 600;
-    color: #666;
+    color: var(--color-text-secondary);
     white-space: nowrap;
   }
 
   .info-cell {
     font-size: 12px;
-    color: #666;
+    color: var(--color-text-secondary);
     white-space: nowrap;
     min-width: 64px;
   }
@@ -43,6 +45,6 @@ export const HistoryTableStyle = styled.table`
 
 export const SeasonCell = styled.td`
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-secondary);
   white-space: nowrap;
 `

@@ -12,13 +12,13 @@ export const HotColdGrid = styled.div`
 `
 
 export const HotTitle = styled.h4`
-  color: #e74c3c;
+  color: var(--color-hot);
   margin-bottom: 12px;
   font-size: 14px;
 `
 
 export const ColdTitle = styled.h4`
-  color: #3498db;
+  color: var(--color-cold);
   margin-bottom: 12px;
   font-size: 14px;
 `
@@ -35,12 +35,13 @@ export const RankNum = styled.span`
   font-size: 13px;
   font-weight: 600;
   text-align: right;
+  color: var(--color-text);
 `
 
 export const RankBarBg = styled.div`
   flex: 1;
   height: 18px;
-  background: #f0f0f0;
+  background: var(--color-track);
   border-radius: 4px;
   overflow: hidden;
 `
@@ -58,6 +59,6 @@ export const RankBar = styled.div<{ $variant: 'hot' | 'cold' }>`
 export const RankCount = styled.span`
   width: 28px;
   font-size: 12px;
-  color: #999;
+  color: var(--color-text-tertiary);
   text-align: left;
 `

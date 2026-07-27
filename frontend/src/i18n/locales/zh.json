@@ -87,5 +87,10 @@
   "fullscreenCard": {
     "restore": "还原",
     "fullscreen": "全屏"
+  },
+  "theme": {
+    "light": "浅色",
+    "system": "跟随系统",
+    "dark": "深色"
   }
 }

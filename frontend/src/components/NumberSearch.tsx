@@ -17,13 +17,13 @@ const Selector = styled.div`
   flex: 1 1 200px;
   min-width: 0;
   padding: 8px 14px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.2s;
 
   &:hover {
-    border-color: #1a1a2e;
+    border-color: var(--color-primary);
   }
 `
 
@@ -49,7 +49,7 @@ const Ball = styled.span<{ $zone: string }>`
 `
 
 const Placeholder = styled.span`
-  color: #999;
+  color: var(--color-text-tertiary);
   font-size: 13px;
   line-height: 32px;
 `
@@ -63,7 +63,7 @@ const SectionTitle = styled.div`
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--color-text);
 `
 
 const Grid = styled.div`
@@ -77,9 +77,9 @@ const NumBtn = styled.button<{ $sel?: boolean; $zone: string }>`
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 1px solid ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : '#ddd'};
-  background: ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : '#fff'};
-  color: ${p => p.$sel ? '#fff' : '#333'};
+  border: 1px solid ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : 'var(--color-border)'};
+  background: ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : 'var(--color-surface)'};
+  color: ${p => p.$sel ? '#fff' : 'var(--color-text)'};
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -109,8 +109,8 @@ const Actions = styled.div`
 
 const CfmBtn = styled.button`
   padding: 6px 20px;
-  background: #1a1a2e;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
   border-radius: 6px;
   font-size: 13px;
@@ -124,9 +124,9 @@ const CfmBtn = styled.button`
 
 const ClrBtn = styled.button`
   padding: 6px 14px;
-  background: #fff;
-  color: #e74c3c;
-  border: 1px solid #e74c3c;
+  background: var(--color-surface);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
@@ -134,9 +134,9 @@ const ClrBtn = styled.button`
 
 const CclBtn = styled.button`
   padding: 6px 20px;
-  background: #fff;
-  color: #666;
-  border: 1px solid #ddd;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 13px;
   cursor: pointer;
@@ -144,8 +144,8 @@ const CclBtn = styled.button`
 
 const QueryBtn = styled.button`
   padding: 17px 24px;
-  background: #1a1a2e;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -166,9 +166,9 @@ const ResultTag = styled.span<{ $hit: boolean }>`
   font-weight: 500;
   padding: 6px 12px;
   border-radius: 8px;
-  background: ${p => p.$hit ? '#f0fdf4' : '#f8fafc'};
-  border: 1px solid ${p => p.$hit ? '#bbf7d0' : '#e2e8f0'};
-  color: ${p => p.$hit ? '#166534' : '#475569'};
+  background: ${p => p.$hit ? 'var(--color-success-bg)' : 'var(--color-neutral-bg)'};
+  border: 1px solid ${p => p.$hit ? 'var(--color-success-border)' : 'var(--color-neutral-border)'};
+  color: ${p => p.$hit ? 'var(--color-success-text)' : 'var(--color-neutral-text)'};
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -189,7 +189,7 @@ const ResultTag = styled.span<{ $hit: boolean }>`
 `
 
 const ErrMsg = styled.span`
-  color: #e74c3c;
+  color: var(--color-danger);
   font-size: 12px;
 `
 

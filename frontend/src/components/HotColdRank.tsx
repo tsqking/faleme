@@ -58,7 +58,7 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
           flexWrap: 'wrap',
         }}
       >
-        <span style={{ fontSize: 13, color: '#666' }}>
+        <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
           {t('hotCold.recent')}
         </span>
         <input
@@ -69,12 +69,14 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
           style={{
             width: 60,
             padding: '4px 8px',
-            border: '1px solid #ddd',
+            border: '1px solid var(--color-border)',
             borderRadius: 4,
             fontSize: 13,
+            background: 'var(--color-input-bg)',
+            color: 'var(--color-text)',
           }}
         />
-        <span style={{ fontSize: 13, color: '#666' }}>
+        <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
           {t('hotCold.draws')}
         </span>
       </span>

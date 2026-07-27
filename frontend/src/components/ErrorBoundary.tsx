@@ -25,8 +25,8 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div style={{ padding: 80, textAlign: 'center' }}>
-          <h2 style={{ color: '#e74c3c' }}>{i18n.t('common.error')}</h2>
-          <p style={{ color: '#666', marginTop: 8 }}>{this.state.message}</p>
+          <h2 style={{ color: 'var(--color-danger)' }}>{i18n.t('common.error')}</h2>
+          <p style={{ color: 'var(--color-text-secondary)', marginTop: 8 }}>{this.state.message}</p>
         </div>
       )
     }

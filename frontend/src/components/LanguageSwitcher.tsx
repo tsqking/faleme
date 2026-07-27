@@ -9,16 +9,16 @@ const Wrapper = styled.div`
 
 const LangBtn = styled.button<{ $active: boolean }>`
   padding: 2px 8px;
-  border: 1px solid ${p => p.$active ? '#1a1a2e' : '#ddd'};
+  border: 1px solid ${p => p.$active ? 'var(--color-primary)' : 'var(--color-border)'};
   border-radius: 4px;
-  background: ${p => p.$active ? '#1a1a2e' : '#fff'};
-  color: ${p => p.$active ? '#fff' : '#666'};
+  background: ${p => p.$active ? 'var(--color-primary)' : 'var(--color-surface)'};
+  color: ${p => p.$active ? 'var(--color-on-primary)' : 'var(--color-text-secondary)'};
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    border-color: #1a1a2e;
+    border-color: var(--color-primary);
   }
 `
 

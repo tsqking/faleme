@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ConfigProvider, theme as antdTheme } from 'antd'
 import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
 import { useLotteryData } from './hooks/useLotteryData'
+import { useTheme } from './hooks/useTheme'
 import { StatsCards } from './components/StatsCards'
 import { TrendChart } from './components/TrendChart'
 import { FrequencyChart } from './components/FrequencyChart'
@@ -10,6 +12,7 @@ import { HotColdRank } from './components/HotColdRank'
 import { HistoryTable } from './components/HistoryTable'
 import { NumberSearch } from './components/NumberSearch'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
+import { ThemeToggle } from './components/ThemeToggle'
 
 const AppContainer = styled.div`
   max-width: 1400px;
@@ -31,7 +34,7 @@ const AppHeader = styled.header`
   h1 {
     font-size: 24px;
     font-weight: 700;
-    color: #1a1a2e;
+    color: var(--color-primary);
   }
 
   @media (max-width: 768px) {
@@ -42,6 +45,13 @@ const AppHeader = styled.header`
       font-size: 18px;
     }
   }
+`
+
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 `
 
 const FullRow = styled.div`
@@ -56,22 +66,26 @@ const StatusMessage = styled.div<{ $isError?: boolean }>`
   text-align: center;
   padding: 80px;
   font-size: 18px;
-  color: ${p => p.$isError ? '#e74c3c' : '#666'};
+  color: ${p => p.$isError ? 'var(--color-danger)' : 'var(--color-text-secondary)'};
 `
 
 function App() {
   const { t } = useTranslation()
+  const { resolved } = useTheme()
   const [page, setPage] = useState(1)
   const [period, setPeriod] = useState(30)
   const { history, frequency, trend, hotCold, loading, error } = useLotteryData(page, 15, period)
 
   return (
-    <>
+    <ConfigProvider theme={{ algorithm: resolved === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm }}>
       <GlobalStyle />
       <AppContainer>
         <AppHeader>
           <h1>{t('app.title')}</h1>
-          <LanguageSwitcher />
+          <HeaderActions>
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </HeaderActions>
         </AppHeader>
 
         {loading && <StatusMessage>{t('common.loading')}</StatusMessage>}
@@ -90,7 +104,7 @@ function App() {
           </>
         )}
       </AppContainer>
-    </>
+    </ConfigProvider>
   )
 }
 

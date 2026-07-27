@@ -5,6 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>大乐透数据看板</title>
+    <script>
+      (function () {
+        var mode = 'system';
+        try {
+          mode = localStorage.getItem('theme-mode') || 'system';
+        } catch (e) {
+          // localStorage unavailable (e.g. private mode); default to system
+        }
+        var dark = mode === 'dark' ||
+          (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

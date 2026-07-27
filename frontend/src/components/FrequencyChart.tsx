@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { FrequencyResponse } from '../types'
 import { TabGroup, Tab } from '../styles/shared'
 import { FullscreenCard } from './FullscreenCard'
+import { useChartTheme } from '../hooks/useChartTheme'
 
 interface Props {
   data: FrequencyResponse
@@ -15,6 +16,7 @@ const MID_COLOR = '#dfe6e9'
 
 export function FrequencyChart({ data }: Props) {
   const { t } = useTranslation()
+  const { gridStroke, tickFill, tooltipStyle } = useChartTheme()
   const [zone, setZone] = useState<'front' | 'back'>('front')
   const items = zone === 'front' ? data.front : data.back
   const maxCount = Math.max(...items.map(x => x.count))
@@ -30,10 +32,10 @@ export function FrequencyChart({ data }: Props) {
     <FullscreenCard title={t('frequencyChart.title')} controls={controls}>
       <ResponsiveContainer width="100%" height={350}>
         <BarChart data={items} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-          <XAxis dataKey="number" tick={{ fontSize: 11 }} />
-          <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip formatter={(value) => [t('frequencyChart.times', { count: Number(value) }), t('frequencyChart.appearCount')]} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+          <XAxis dataKey="number" tick={{ fontSize: 11, fill: tickFill }} />
+          <YAxis tick={{ fontSize: 11, fill: tickFill }} />
+          <Tooltip contentStyle={tooltipStyle} formatter={(value) => [t('frequencyChart.times', { count: Number(value) }), t('frequencyChart.appearCount')]} />
           <Bar dataKey="count" radius={[4, 4, 0, 0]}>
             {items.map((entry) => (
               <Cell
