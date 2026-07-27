@@ -58,9 +58,10 @@ faleme/
 │   │   ├── App.tsx      # 根组件
 │   │   └── main.tsx     # 入口文件
 │   └── package.json
-├── Dockerfile           # 多阶段构建（前端构建 + 后端运行）
-├── docker-compose.yml
-├── start.sh             # 一键启动脚本
+├── deploy/              # 部署相关
+│   ├── Dockerfile       # 多阶段构建（前端构建 + 后端运行）
+│   ├── docker-compose.yml
+│   └── start.sh         # 一键启动脚本
 └── README.md
 ```
 
@@ -89,7 +90,7 @@ cd ..
 ### 一键启动
 
 ```bash
-bash start.sh
+bash deploy/start.sh
 ```
 
 该脚本会同时启动后端 (FastAPI, 端口 8000) 和前端 (Vite Dev Server, 端口 5173)。
@@ -110,7 +111,7 @@ pnpm dev
 ### Docker 部署
 
 ```bash
-docker compose up --build
+docker compose -f deploy/docker-compose.yml up --build
 ```
 
 采用多阶段构建：第一阶段用 Node 构建前端静态资源，第二阶段在 Python 镜像中安装后端依赖并托管前端产物，由 FastAPI 统一提供 API 与静态站点服务。容器以非 root 用户运行，启动后访问 http://localhost:8000。

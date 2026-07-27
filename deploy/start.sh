@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 BACKEND_PORT=8000
 FRONTEND_PORT=5173
 
@@ -45,11 +46,11 @@ kill_port $BACKEND_PORT
 kill_port $FRONTEND_PORT
 
 echo "=== Starting Backend (FastAPI) ==="
-cd "$SCRIPT_DIR"
+cd "$APP_DIR"
 $UVICORN backend.main:app --host 127.0.0.1 --port $BACKEND_PORT &
 BACKEND_PID=$!
 sleep 2
 
 echo "=== Starting Frontend (Vite) ==="
-cd "$SCRIPT_DIR/frontend"
+cd "$APP_DIR/frontend"
 pnpm vite --host 127.0.0.1 --port $FRONTEND_PORT

@@ -123,7 +123,7 @@ backend/
 
 ## 分阶段实施步骤
 
-1. **基础设施**：`docker-compose.yml` 加 `mongo`/`redis`（带健康检查与卷）；`requirements.txt` 加 motor/redis/apscheduler/pydantic-settings
+1. **基础设施**：`deploy/docker-compose.yml` 加 `mongo`/`redis`（带健康检查与卷）；`requirements.txt` 加 motor/redis/apscheduler/pydantic-settings
 2. **配置层**：`config.py` 改 `pydantic-settings`；`db/` 建单例连接；lifespan 管理连接生命周期
 3. **Repository + 迁移**：实现 `DrawRepository`；写 `migrate_data_json.py` 并跑一次导入
 4. **scraper 改造**：抓取结果 `upsert_many` 到 Mongo，删除写文件逻辑
@@ -150,5 +150,5 @@ backend/
 ## 文件变更清单
 
 - 新建：`backend/db/{__init__,mongo,redis}.py`、`backend/repository/{__init__,draws}.py`、`backend/cache.py`、`backend/scheduler.py`、`backend/scripts/migrate_data_json.py`
-- 修改：`backend/config.py`、`backend/main.py`、`backend/scraper.py`、`backend/requirements.txt`、`docker-compose.yml`、`README.md`
+- 修改：`backend/config.py`、`backend/main.py`、`backend/scraper.py`、`backend/requirements.txt`、`deploy/docker-compose.yml`、`README.md`
 - 移除/弃用：`backend/data.json`（迁移后）、`common/utils.py` 可保留
