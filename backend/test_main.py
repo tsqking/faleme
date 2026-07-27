@@ -24,13 +24,16 @@ class MainApiTests(unittest.TestCase):
     def setUp(self):
         self.original_data_file = main.DATA_FILE
         self.original_cache = main._data_cache
+        self.original_index = main._index_cache
         self.temp_dir = tempfile.TemporaryDirectory()
         main.DATA_FILE = str(Path(self.temp_dir.name) / "data.json")
         main._data_cache = None
+        main._index_cache = None
 
     def tearDown(self):
         main.DATA_FILE = self.original_data_file
         main._data_cache = self.original_cache
+        main._index_cache = self.original_index
         self.temp_dir.cleanup()
 
     def write_data(self, items):

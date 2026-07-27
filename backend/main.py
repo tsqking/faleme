@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from collections import Counter
 from contextlib import asynccontextmanager
 from datetime import date
 from typing import Any
@@ -19,11 +20,27 @@ logger = logging.getLogger(__name__)
 FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")
 
 _data_cache: list[dict[str, Any]] | None = None
+_index_cache: dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]] | None = None
 
 
 def _invalidate_data_cache() -> None:
-    global _data_cache
+    global _data_cache, _index_cache
     _data_cache = None
+    _index_cache = None
+
+
+def _get_index() -> dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]]:
+    global _index_cache
+    if _index_cache is not None:
+        return _index_cache
+    index: dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]] = {}
+    for item in _load_data():
+        parts = _number_parts(item["number"])
+        if parts is None:
+            continue
+        index.setdefault(parts, []).append({"season": item["season"], "number": item["number"]})
+    _index_cache = index
+    return _index_cache
 
 
 def _load_raw() -> Any:
@@ -144,20 +161,17 @@ def get_history(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=
 
 @app.get("/api/stats/frequency")
 def get_frequency():
-    data = _load_data()
-    front_counts: dict[int, int] = {i: 0 for i in range(1, 36)}
-    back_counts: dict[int, int] = {i: 0 for i in range(1, 13)}
+    front_counts: Counter[int] = Counter()
+    back_counts: Counter[int] = Counter()
 
-    for item in data:
+    for item in _load_data():
         parts = [int(x) for x in item["number"].split()]
-        for n in parts[:5]:
-            front_counts[n] = front_counts.get(n, 0) + 1
-        for n in parts[5:]:
-            back_counts[n] = back_counts.get(n, 0) + 1
+        front_counts.update(parts[:5])
+        back_counts.update(parts[5:])
 
     return {
-        "front": [{"number": k, "count": v} for k, v in sorted(front_counts.items())],
-        "back": [{"number": k, "count": v} for k, v in sorted(back_counts.items())],
+        "front": [{"number": n, "count": front_counts.get(n, 0)} for n in range(1, 36)],
+        "back": [{"number": n, "count": back_counts.get(n, 0)} for n in range(1, 13)],
     }
 
 
@@ -194,22 +208,15 @@ def get_trend(
 
 @app.get("/api/check")
 def check_numbers(numbers: str = Query(..., description="7个空格分隔的号码，如 '02 06 19 28 32 05 12'")):
-    data = _load_data()
     query_parts = _number_parts(numbers)
-    results = []
     if query_parts is None:
         return {
             "numbers": numbers,
             "matched": False,
-            "matches": results,
+            "matches": [],
             "total_matches": 0,
         }
-    for item in data:
-        if _number_parts(item["number"]) == query_parts:
-            results.append({
-                "season": item["season"],
-                "number": item["number"],
-            })
+    results = _get_index().get(query_parts, [])
     return {
         "numbers": numbers,
         "matched": len(results) > 0,
@@ -220,21 +227,17 @@ def check_numbers(numbers: str = Query(..., description="7个空格分隔的号�
 
 @app.get("/api/stats/hot-cold")
 def get_hot_cold(period: int = Query(30, ge=1)):
-    data = sorted(_load_data(), key=lambda x: x["season"], reverse=True)
-    recent = data[:period]
-
-    front_counts: dict[int, int] = {i: 0 for i in range(1, 36)}
-    back_counts: dict[int, int] = {i: 0 for i in range(1, 13)}
+    recent = sorted(_load_data(), key=lambda x: x["season"], reverse=True)[:period]
+    front_counts: Counter[int] = Counter()
+    back_counts: Counter[int] = Counter()
 
     for item in recent:
         parts = [int(x) for x in item["number"].split()]
-        for n in parts[:5]:
-            front_counts[n] = front_counts.get(n, 0) + 1
-        for n in parts[5:]:
-            back_counts[n] = back_counts.get(n, 0) + 1
+        front_counts.update(parts[:5])
+        back_counts.update(parts[5:])
 
-    front_sorted = sorted(front_counts.items(), key=lambda x: x[1], reverse=True)
-    back_sorted = sorted(back_counts.items(), key=lambda x: x[1], reverse=True)
+    front_sorted = sorted(((n, front_counts.get(n, 0)) for n in range(1, 36)), key=lambda x: x[1], reverse=True)
+    back_sorted = sorted(((n, back_counts.get(n, 0)) for n in range(1, 13)), key=lambda x: x[1], reverse=True)
 
     return {
         "period": period,

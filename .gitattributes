@@ -1,0 +1,13 @@
+# Let Git auto-detect text vs binary for normalization
+* text=auto
+
+# Force LF for files consumed by Linux containers / shells
+*.sh text eol=lf
+Dockerfile text eol=lf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.svg binary
+*.ico binary
