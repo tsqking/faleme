@@ -30,7 +30,7 @@ export function FullscreenCard({ title, controls, children }: Props) {
 
   return (
     <>
-      {fs && (
+      {fs ? (
         <Overlay>
           <OverlayHeader>
             <h2>{title}</h2>
@@ -38,17 +38,18 @@ export function FullscreenCard({ title, controls, children }: Props) {
           </OverlayHeader>
           <OverlayBody>{children}</OverlayBody>
         </Overlay>
+      ) : (
+        <ChartSection>
+          <ChartHeader>
+            <h3>{title}</h3>
+            <HeaderRight>
+              {controls}
+              <ExpandButton onClick={() => setFs(true)} title={t('fullscreenCard.fullscreen')}>⛶</ExpandButton>
+            </HeaderRight>
+          </ChartHeader>
+          {children}
+        </ChartSection>
       )}
-      <ChartSection>
-        <ChartHeader>
-          <h3>{title}</h3>
-          <HeaderRight>
-            {controls}
-            <ExpandButton onClick={() => setFs(true)} title={t('fullscreenCard.fullscreen')}>⛶</ExpandButton>
-          </HeaderRight>
-        </ChartHeader>
-        {children}
-      </ChartSection>
     </>
   )
 }

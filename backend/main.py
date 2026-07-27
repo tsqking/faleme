@@ -86,10 +86,14 @@ app = FastAPI(title="大乐透数据 API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.environ.get(
-        "CORS_ALLOW_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
-    ).split(","),
+    allow_origins=[
+        origin.strip()
+        for origin in os.environ.get(
+            "CORS_ALLOW_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173",
+        ).split(",")
+        if origin.strip()
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -233,11 +237,15 @@ def get_hot_cold(period: int = Query(30, ge=1)):
 _INDEX_HTML = os.path.join(FRONTEND_DIST, "index.html")
 
 if os.path.isfile(_INDEX_HTML):
+    _FRONTEND_DIST_REAL = os.path.realpath(FRONTEND_DIST)
     app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="static-assets")
 
     @app.get("/{path:path}")
     async def serve_spa(request: Request, path: str):
-        file_path = os.path.join(FRONTEND_DIST, path)
-        if os.path.isfile(file_path):
+        file_path = os.path.realpath(os.path.join(FRONTEND_DIST, path))
+        if (
+            (file_path == _FRONTEND_DIST_REAL or file_path.startswith(_FRONTEND_DIST_REAL + os.sep))
+            and os.path.isfile(file_path)
+        ):
             return FileResponse(file_path)
         return FileResponse(_INDEX_HTML)

@@ -17,7 +17,10 @@ def _parse_int(text: str) -> int | None:
     value = text.replace(",", "").strip()
     if not value or value == "-":
         return None
-    return int(value)
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 def refresh_data() -> list[dict[str, Any]]:
     url = "https://datachart.500star.com/dlt/history/newinc/history.php"
