@@ -24,6 +24,7 @@ export function useLotteryData(page: number, pageSize: number = 15, period: numb
   const [hotCold, setHotCold] = useState<HotColdResponse | null>(null)
   const initialLoad = useRef(true)
   const prevPage = useRef(page)
+  const prevPageSize = useRef(pageSize)
   const prevPeriod = useRef(period)
 
   useEffect(() => {
@@ -43,11 +44,12 @@ export function useLotteryData(page: number, pageSize: number = 15, period: numb
           } catch (e) {
             if (!signal.aborted) setError(getErrorMsg(e))
           }
-        } else if (page !== prevPage.current) {
+        }
+        if (page !== prevPage.current || pageSize !== prevPageSize.current) {
           try {
             setError(null)
             const h = await fetch(`/api/history?page=${page}&page_size=${pageSize}`, { signal }).then<HistoryResponse>(r => parseJson(r))
-            if (!signal.aborted) { setHistory(h); prevPage.current = page }
+            if (!signal.aborted) { setHistory(h); prevPage.current = page; prevPageSize.current = pageSize }
           } catch (e) {
             if (!signal.aborted) setError(getErrorMsg(e))
           }
@@ -71,6 +73,7 @@ export function useLotteryData(page: number, pageSize: number = 15, period: numb
           setTrend(t)
           setHotCold(hc)
           prevPage.current = page
+          prevPageSize.current = pageSize
           prevPeriod.current = period
           initialLoad.current = false
         }

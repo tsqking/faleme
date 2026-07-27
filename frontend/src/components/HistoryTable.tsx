@@ -35,15 +35,15 @@ export function HistoryTable({ data, onPageChange }: Props) {
             {data.items.map(item => (
               <tr key={item.season}>
                 <td className="season-cell">{item.season}</td>
-                {item.front.map((n, i) => (
-                  <td key={i}>
+                {item.front.map((n) => (
+                  <td key={`f${n}`}>
                     <Ball $zone="front" $size={n >= 25 ? 'big' : n >= 15 ? 'mid' : 'small'}>
                       {String(n).padStart(2, '0')}
                     </Ball>
                   </td>
                 ))}
-                {item.back.map((n, i) => (
-                  <td key={i}>
+                {item.back.map((n) => (
+                  <td key={`b${n}`}>
                     <Ball $zone="back">
                       {String(n).padStart(2, '0')}
                     </Ball>

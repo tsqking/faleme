@@ -60,6 +60,39 @@ class MainApiTests(unittest.TestCase):
 
         self.assertTrue(result["matched"])
 
+    def test_check_numbers_invalid_input_returns_unmatched(self):
+        self.write_data([make_draw("001")])
+
+        result = main.check_numbers("not numbers")
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["total_matches"], 0)
+
+    def test_frequency_counts_front_and_back(self):
+        self.write_data([
+            make_draw("001", "01 02 03 04 05 06 07"),
+            make_draw("002", "01 02 03 04 05 06 07"),
+        ])
+
+        result = main.get_frequency()
+
+        front_by_num = {f["number"]: f["count"] for f in result["front"]}
+        back_by_num = {b["number"]: b["count"] for b in result["back"]}
+        self.assertEqual(front_by_num[1], 2)
+        self.assertEqual(back_by_num[6], 2)
+
+    def test_trend_returns_positions_in_order(self):
+        self.write_data([make_draw("001", "01 02 03 04 05 06 07")])
+
+        result = main.get_trend(start_season=None, end_season=None, limit=None)
+
+        self.assertEqual(result["total"], 1)
+        item = result["items"][0]
+        self.assertEqual(item["pos1"], 1)
+        self.assertEqual(item["pos5"], 5)
+        self.assertEqual(item["pos6"], 6)
+        self.assertEqual(item["pos7"], 7)
+
 
 if __name__ == "__main__":
     unittest.main()

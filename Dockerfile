@@ -24,6 +24,9 @@ COPY common/ common/
 
 COPY --from=frontend-build /app/frontend/dist frontend/dist
 
+RUN adduser --disabled-password --gecos "" --uid 1001 appuser && chown -R appuser:appuser /app
+USER appuser
+
 EXPOSE 8000
 
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

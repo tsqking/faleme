@@ -1,15 +1,16 @@
 import json
-import os
-import sys
+import logging
 from datetime import date
 from typing import Any
 
 import bs4
 import requests
 
+from backend.config import DATA_FILE
 from common import utils
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
+logger = logging.getLogger(__name__)
+
 REQUEST_TIMEOUT = 30
 
 
@@ -34,7 +35,7 @@ def refresh_data() -> list[dict[str, Any]]:
         r.raise_for_status()
         r.encoding = r.apparent_encoding or "utf-8"
     except requests.RequestException as e:
-        print(f"网络请求失败: {e}", file=sys.stderr)
+        logger.error("网络请求失败: %s", e)
         raise
 
     soup = bs4.BeautifulSoup(r.text, "html.parser")

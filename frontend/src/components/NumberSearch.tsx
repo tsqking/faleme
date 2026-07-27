@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { Popover, message } from 'antd'
@@ -207,19 +207,28 @@ export function NumberSearch() {
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const { t } = useTranslation()
+  const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    return () => abortRef.current?.abort()
+  }, [])
 
   const doSearch = async (f: number[], b: number[]) => {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
     setLoading(true)
     setErr(null)
     try {
-      const r = await fetch(`/api/check?numbers=${encodeURIComponent(fmt(f, b))}`)
+      const r = await fetch(`/api/check?numbers=${encodeURIComponent(fmt(f, b))}`, { signal: controller.signal })
       if (!r.ok) throw new Error(t('numberSearch.queryFailed'))
       const d: CheckResult = await r.json()
       setResult(d)
     } catch (e) {
+      if (controller.signal.aborted) return
       setErr(e instanceof Error ? e.message : t('numberSearch.queryError'))
     } finally {
-      setLoading(false)
+      if (!controller.signal.aborted) setLoading(false)
     }
   }
 

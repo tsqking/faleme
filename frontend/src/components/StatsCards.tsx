@@ -5,9 +5,10 @@ import { StatsGrid, StatCard, StatLabel, StatValue, StatDesc } from '../styles/S
 interface Props {
   data: FrequencyResponse
   latestDraw?: DrawItem
+  totalDraws?: number
 }
 
-export function StatsCards({ data, latestDraw }: Props) {
+export function StatsCards({ data, latestDraw, totalDraws }: Props) {
   const { t } = useTranslation()
 
   const fmtMoney = (n: number | null): string => {
@@ -15,16 +16,16 @@ export function StatsCards({ data, latestDraw }: Props) {
     return (n / 10000).toFixed(0) + t('common.wan')
   }
   const totalFront = data.front.reduce((s, x) => s + x.count, 0)
-  const maxFront = [...data.front].sort((a, b) => b.count - a.count)[0]
-  const maxBack = [...data.back].sort((a, b) => b.count - a.count)[0]
-  const minFront = [...data.front].sort((a, b) => a.count - b.count)[0]
-  const minBack = [...data.back].sort((a, b) => a.count - b.count)[0]
+  const maxFront = data.front.reduce((a, b) => (b.count > a.count ? b : a))
+  const maxBack = data.back.reduce((a, b) => (b.count > a.count ? b : a))
+  const minFront = data.front.reduce((a, b) => (b.count < a.count ? b : a))
+  const minBack = data.back.reduce((a, b) => (b.count < a.count ? b : a))
 
   return (
     <StatsGrid>
       <StatCard>
         <StatLabel>{t('statsCards.totalDraws')}</StatLabel>
-        <StatValue>{totalFront / 5}</StatValue>
+        <StatValue>{totalDraws ?? totalFront / 5}</StatValue>
       </StatCard>
       <StatCard>
         <StatLabel>{t('statsCards.frontHottest')}</StatLabel>

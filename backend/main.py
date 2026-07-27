@@ -1,17 +1,21 @@
 import json
+import logging
 import os
 from contextlib import asynccontextmanager
 from datetime import date
 from typing import Any
 
 from fastapi import FastAPI, Query, Request
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from backend.config import DATA_FILE
 from backend.scraper import refresh_data
 
-DATA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
+logger = logging.getLogger(__name__)
+
 FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")
 
 _data_cache: list[dict[str, Any]] | None = None
@@ -30,10 +34,10 @@ def _load_raw() -> Any:
 def _load_data() -> list[dict[str, Any]]:
     global _data_cache
     if _data_cache is not None:
-        return _data_cache
+        return _data_cache.copy()
     raw = _load_raw()
     _data_cache = raw["data"] if isinstance(raw, dict) else raw
-    return _data_cache
+    return _data_cache.copy()
 
 
 def _number_parts(numbers: str) -> tuple[tuple[int, ...], tuple[int, ...]] | None:
@@ -51,33 +55,33 @@ async def lifespan(app: FastAPI):
     today = date.today().isoformat()
 
     if not os.path.exists(DATA_FILE):
-        print("data.json 不存在，正在从网络获取...")
+        logger.info("data.json 不存在，正在从网络获取...")
         try:
-            refresh_data()
+            await run_in_threadpool(refresh_data)
             _invalidate_data_cache()
-            print("数据获取完成")
+            logger.info("数据获取完成")
         except Exception as e:
             raise RuntimeError(f"数据获取失败: {e}") from e
     else:
         raw = _load_raw()
         if isinstance(raw, list):
-            print("data.json 格式较旧，正在重新抓取...")
+            logger.info("data.json 格式较旧，正在重新抓取...")
             try:
-                refresh_data()
+                await run_in_threadpool(refresh_data)
                 _invalidate_data_cache()
-                print("数据更新完成")
+                logger.info("数据更新完成")
             except Exception as e:
-                print(f"数据更新失败，使用旧数据: {e}")
+                logger.error("数据更新失败，使用旧数据: %s", e)
         elif raw.get("_fetched_date") != today:
-            print(f"数据日期 {raw.get('_fetched_date')} 与今天 {today} 不一致，正在重新抓取...")
+            logger.info("数据日期 %s 与今天 %s 不一致，正在重新抓取...", raw.get("_fetched_date"), today)
             try:
-                refresh_data()
+                await run_in_threadpool(refresh_data)
                 _invalidate_data_cache()
-                print("数据更新完成")
+                logger.info("数据更新完成")
             except Exception as e:
-                print(f"数据更新失败，使用旧数据: {e}")
+                logger.error("数据更新失败，使用旧数据: %s", e)
         else:
-            print(f"数据已是最新 ({today})")
+            logger.info("数据已是最新 (%s)", today)
 
     yield
 
@@ -99,12 +103,19 @@ app.add_middleware(
 )
 
 
-def _parse_numbers(item: dict[str, Any]) -> dict[str, Any]:
+def _parse_numbers(item: dict[str, Any]) -> dict[str, Any] | None:
     parts = item["number"].split()
+    if len(parts) != 7:
+        return None
+    try:
+        front = [int(x) for x in parts[:5]]
+        back = [int(x) for x in parts[5:]]
+    except ValueError:
+        return None
     return {
         "season": item["season"],
-        "front": [int(x) for x in parts[:5]],
-        "back": [int(x) for x in parts[5:]],
+        "front": front,
+        "back": back,
         "pool": item.get("pool"),
         "first_prize_count": item.get("first_prize_count"),
         "first_prize_amount": item.get("first_prize_amount"),
@@ -117,7 +128,7 @@ def _parse_numbers(item: dict[str, Any]) -> dict[str, Any]:
 
 @app.get("/api/history")
 def get_history(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100)):
-    data = [_parse_numbers(d) for d in _load_data()]
+    data = [p for p in (_parse_numbers(d) for d in _load_data()) if p is not None]
     data.sort(key=lambda x: x["season"], reverse=True)
     total = len(data)
     start = (page - 1) * page_size
@@ -156,7 +167,7 @@ def get_trend(
     end_season: str | None = Query(None, description="截止期号"),
     limit: int | None = Query(None, ge=1, description="最近N条"),
 ):
-    data = [_parse_numbers(d) for d in _load_data()]
+    data = [p for p in (_parse_numbers(d) for d in _load_data()) if p is not None]
     data.sort(key=lambda x: x["season"])
 
     if start_season:
