@@ -1,5 +1,9 @@
 # Rules
 
+## Language
+
+Thinking process and conclusions must be in Chinese (中文).
+
 ## Commit Messages
 
 After every code change, run `git diff --stat` (and `git diff` if needed) to understand what changed, then output a concise English commit message using conventional commits format (e.g., `feat:`, `fix:`, `refactor:`, `style:`, `chore:`).
