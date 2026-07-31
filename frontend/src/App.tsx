@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ConfigProvider, theme as antdTheme } from 'antd'
+import { App as AntdApp, ConfigProvider, theme as antdTheme } from 'antd'
 import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
 import { useLotteryData } from './hooks/useLotteryData'
@@ -78,32 +78,34 @@ function App() {
 
   return (
     <ConfigProvider theme={{ algorithm: resolved === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm }}>
-      <GlobalStyle />
-      <AppContainer>
-        <AppHeader>
-          <h1>{t('app.title')}</h1>
-          <HeaderActions>
-            <LanguageSwitcher />
-            <ThemeToggle />
-          </HeaderActions>
-        </AppHeader>
+      <AntdApp>
+        <GlobalStyle />
+        <AppContainer>
+          <AppHeader>
+            <h1>{t('app.title')}</h1>
+            <HeaderActions>
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </HeaderActions>
+          </AppHeader>
 
-        {loading && <StatusMessage>{t('common.loading')}</StatusMessage>}
-        {error && !loading && <StatusMessage $isError>{t('common.error')}{error}</StatusMessage>}
+          {loading && <StatusMessage>{t('common.loading')}</StatusMessage>}
+          {error && !loading && <StatusMessage $isError>{t('common.error')}{error}</StatusMessage>}
 
-        {!loading && (
-          <>
-            <NumberSearch />
+          {!loading && (
+            <>
+              <NumberSearch />
 
-            {frequency && <StatsCards data={frequency} latestDraw={history?.items[0]} totalDraws={history?.total} />}
+              {frequency && <StatsCards data={frequency} latestDraw={history?.items[0]} totalDraws={history?.total} />}
 
-            <FullRow>{history && <HistoryTable data={history} onPageChange={setPage} />}</FullRow>
-            <FullRow>{trend && <TrendChart data={trend} />}</FullRow>
-            <FullRow>{frequency && <FrequencyChart data={frequency} />}</FullRow>
-            <FullRow>{hotCold && <HotColdRank data={hotCold} period={period} onPeriodChange={setPeriod} />}</FullRow>
-          </>
-        )}
-      </AppContainer>
+              <FullRow>{history && <HistoryTable data={history} onPageChange={setPage} />}</FullRow>
+              <FullRow>{trend && <TrendChart data={trend} />}</FullRow>
+              <FullRow>{frequency && <FrequencyChart data={frequency} />}</FullRow>
+              <FullRow>{hotCold && <HotColdRank data={hotCold} period={period} onPeriodChange={setPeriod} />}</FullRow>
+            </>
+          )}
+        </AppContainer>
+      </AntdApp>
     </ConfigProvider>
   )
 }

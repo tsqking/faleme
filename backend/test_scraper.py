@@ -35,7 +35,7 @@ class ScraperParsingTests(unittest.TestCase):
             "<td>1,000,000</td><td>3</td><td>10,000,000</td>"
             "<td>10</td><td>5,000,000</td><td>100,000</td><td>2024-01-01</td>"
             "</tr>"
-            "<tr><td colspan=\"15\">-</td></tr>"
+            '<tr><td colspan="15">-</td></tr>'
             "</tbody></table>"
         )
         mock_resp = mock.MagicMock()
@@ -57,6 +57,28 @@ class ScraperParsingTests(unittest.TestCase):
         saved = json.loads(Path(scraper.DATA_FILE).read_text(encoding="utf-8"))
         self.assertEqual(saved["data"][0]["season"], "24001")
         self.assertIn("_fetched_date", saved)
+
+    def test_refresh_data_writes_atomically_without_leftover_temps(self):
+        html = (
+            "<table><tbody>"
+            "<tr>"
+            "<td>24001</td><td>02</td><td>06</td><td>19</td><td>28</td><td>32</td>"
+            "<td>05</td><td>12</td>"
+            "<td>1,000,000</td><td>3</td><td>10,000,000</td>"
+            "<td>10</td><td>5,000,000</td><td>100,000</td><td>2024-01-01</td>"
+            "</tr>"
+            "</tbody></table>"
+        )
+        mock_resp = mock.MagicMock()
+        mock_resp.text = html
+        mock_resp.apparent_encoding = "utf-8"
+        mock_resp.raise_for_status.return_value = None
+        with mock.patch("backend.scraper.requests.get", return_value=mock_resp):
+            scraper.refresh_data()
+
+        self.assertTrue(Path(scraper.DATA_FILE).exists())
+        leftovers = list(Path(self.temp_dir.name).glob("*.tmp"))
+        self.assertEqual(leftovers, [])
 
 
 if __name__ == "__main__":

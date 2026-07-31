@@ -80,6 +80,7 @@
     "back": "Back",
     "recent": "Recent ",
     "draws": " draws",
+    "recentDraws": "Recent draws count",
     "title": "Hot/Cold Analysis (Last {{period}} draws)",
     "hotTop10": "Hot Top 10",
     "coldTop10": "Cold Top 10"

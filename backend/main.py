@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import threading
 from collections import Counter
 from contextlib import asynccontextmanager
 from datetime import date
@@ -21,26 +22,29 @@ FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "
 
 _data_cache: list[dict[str, Any]] | None = None
 _index_cache: dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]] | None = None
+_data_lock = threading.RLock()
 
 
 def _invalidate_data_cache() -> None:
     global _data_cache, _index_cache
-    _data_cache = None
-    _index_cache = None
+    with _data_lock:
+        _data_cache = None
+        _index_cache = None
 
 
 def _get_index() -> dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]]:
     global _index_cache
-    if _index_cache is not None:
+    with _data_lock:
+        if _index_cache is not None:
+            return _index_cache
+        index: dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]] = {}
+        for item in _load_data():
+            parts = _number_parts(item["number"])
+            if parts is None:
+                continue
+            index.setdefault(parts, []).append({"season": item["season"], "number": item["number"]})
+        _index_cache = index
         return _index_cache
-    index: dict[tuple[tuple[int, ...], tuple[int, ...]], list[dict[str, Any]]] = {}
-    for item in _load_data():
-        parts = _number_parts(item["number"])
-        if parts is None:
-            continue
-        index.setdefault(parts, []).append({"season": item["season"], "number": item["number"]})
-    _index_cache = index
-    return _index_cache
 
 
 def _load_raw() -> Any:
@@ -50,11 +54,12 @@ def _load_raw() -> Any:
 
 def _load_data() -> list[dict[str, Any]]:
     global _data_cache
-    if _data_cache is not None:
+    with _data_lock:
+        if _data_cache is not None:
+            return _data_cache.copy()
+        raw = _load_raw()
+        _data_cache = raw["data"] if isinstance(raw, dict) else raw
         return _data_cache.copy()
-    raw = _load_raw()
-    _data_cache = raw["data"] if isinstance(raw, dict) else raw
-    return _data_cache.copy()
 
 
 def _number_parts(numbers: str) -> tuple[tuple[int, ...], tuple[int, ...]] | None:
@@ -65,6 +70,20 @@ def _number_parts(numbers: str) -> tuple[tuple[int, ...], tuple[int, ...]] | Non
     if len(parts) != 7:
         return None
     return tuple(sorted(parts[:5])), tuple(sorted(parts[5:]))
+
+
+def _season_key(season: str) -> tuple[int, int | str]:
+    try:
+        return (0, int(season))
+    except ValueError:
+        return (1, season)
+
+
+def _season_cmp(a: str, b: str) -> int:
+    try:
+        return (int(a) > int(b)) - (int(a) < int(b))
+    except ValueError:
+        return (a > b) - (a < b)
 
 
 @asynccontextmanager
@@ -121,7 +140,10 @@ app.add_middleware(
 
 
 def _parse_numbers(item: dict[str, Any]) -> dict[str, Any] | None:
-    parts = item["number"].split()
+    raw = item.get("number")
+    if not isinstance(raw, str):
+        return None
+    parts = raw.split()
     if len(parts) != 7:
         return None
     try:
@@ -143,10 +165,18 @@ def _parse_numbers(item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+def _all_draws() -> list[dict[str, Any]]:
+    return [p for p in (_parse_numbers(d) for d in _load_data()) if p is not None]
+
+
+@app.get("/api/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 @app.get("/api/history")
 def get_history(page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100)):
-    data = [p for p in (_parse_numbers(d) for d in _load_data()) if p is not None]
-    data.sort(key=lambda x: x["season"], reverse=True)
+    data = sorted(_all_draws(), key=lambda x: _season_key(x["season"]), reverse=True)
     total = len(data)
     start = (page - 1) * page_size
     end = start + page_size
@@ -164,10 +194,9 @@ def get_frequency():
     front_counts: Counter[int] = Counter()
     back_counts: Counter[int] = Counter()
 
-    for item in _load_data():
-        parts = [int(x) for x in item["number"].split()]
-        front_counts.update(parts[:5])
-        back_counts.update(parts[5:])
+    for item in _all_draws():
+        front_counts.update(item["front"])
+        back_counts.update(item["back"])
 
     return {
         "front": [{"number": n, "count": front_counts.get(n, 0)} for n in range(1, 36)],
@@ -181,28 +210,29 @@ def get_trend(
     end_season: str | None = Query(None, description="截止期号"),
     limit: int | None = Query(None, ge=1, description="最近N条"),
 ):
-    data = [p for p in (_parse_numbers(d) for d in _load_data()) if p is not None]
-    data.sort(key=lambda x: x["season"])
+    data = sorted(_all_draws(), key=lambda x: _season_key(x["season"]))
 
     if start_season:
-        data = [d for d in data if d["season"] >= start_season]
+        data = [d for d in data if _season_cmp(d["season"], start_season) >= 0]
     if end_season:
-        data = [d for d in data if d["season"] <= end_season]
+        data = [d for d in data if _season_cmp(d["season"], end_season) <= 0]
     if limit:
         data = data[-limit:]
 
     items = []
     for d in data:
-        items.append({
-            "season": d["season"],
-            "pos1": d["front"][0],
-            "pos2": d["front"][1],
-            "pos3": d["front"][2],
-            "pos4": d["front"][3],
-            "pos5": d["front"][4],
-            "pos6": d["back"][0],
-            "pos7": d["back"][1],
-        })
+        items.append(
+            {
+                "season": d["season"],
+                "pos1": d["front"][0],
+                "pos2": d["front"][1],
+                "pos3": d["front"][2],
+                "pos4": d["front"][3],
+                "pos5": d["front"][4],
+                "pos6": d["back"][0],
+                "pos7": d["back"][1],
+            }
+        )
     return {"items": items, "total": len(items)}
 
 
@@ -227,14 +257,13 @@ def check_numbers(numbers: str = Query(..., description="7个空格分隔的号�
 
 @app.get("/api/stats/hot-cold")
 def get_hot_cold(period: int = Query(30, ge=1)):
-    recent = sorted(_load_data(), key=lambda x: x["season"], reverse=True)[:period]
+    recent = sorted(_all_draws(), key=lambda x: _season_key(x["season"]), reverse=True)[:period]
     front_counts: Counter[int] = Counter()
     back_counts: Counter[int] = Counter()
 
     for item in recent:
-        parts = [int(x) for x in item["number"].split()]
-        front_counts.update(parts[:5])
-        back_counts.update(parts[5:])
+        front_counts.update(item["front"])
+        back_counts.update(item["back"])
 
     front_sorted = sorted(((n, front_counts.get(n, 0)) for n in range(1, 36)), key=lambda x: x[1], reverse=True)
     back_sorted = sorted(((n, back_counts.get(n, 0)) for n in range(1, 13)), key=lambda x: x[1], reverse=True)
@@ -257,9 +286,8 @@ if os.path.isfile(_INDEX_HTML):
     @app.get("/{path:path}")
     async def serve_spa(request: Request, path: str):
         file_path = os.path.realpath(os.path.join(FRONTEND_DIST, path))
-        if (
-            (file_path == _FRONTEND_DIST_REAL or file_path.startswith(_FRONTEND_DIST_REAL + os.sep))
-            and os.path.isfile(file_path)
+        if (file_path == _FRONTEND_DIST_REAL or file_path.startswith(_FRONTEND_DIST_REAL + os.sep)) and os.path.isfile(
+            file_path
         ):
             return FileResponse(file_path)
         return FileResponse(_INDEX_HTML)

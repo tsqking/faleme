@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { Popover, message } from 'antd'
+import { App as AntdApp, Popover } from 'antd'
 import { InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import type { CheckResult } from '../types'
+import { Ball } from './Ball'
 
 const SearchRow = styled.div`
   display: flex;
@@ -35,19 +36,6 @@ const BallRow = styled.div`
   align-items: center;
 `
 
-const Ball = styled.span<{ $zone: string }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  background: ${p => p.$zone === 'back' ? '#4d96ff' : '#e74c3c'};
-`
-
 const Placeholder = styled.span`
   color: var(--color-text-tertiary);
   font-size: 13px;
@@ -77,8 +65,8 @@ const NumBtn = styled.button<{ $sel?: boolean; $zone: string }>`
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 1px solid ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : 'var(--color-border)'};
-  background: ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : 'var(--color-surface)'};
+  border: 1px solid ${p => p.$sel ? (p.$zone === 'back' ? 'var(--color-ball-back)' : 'var(--color-ball-front-big)') : 'var(--color-border)'};
+  background: ${p => p.$sel ? (p.$zone === 'back' ? 'var(--color-ball-back)' : 'var(--color-ball-front-big)') : 'var(--color-surface)'};
   color: ${p => p.$sel ? '#fff' : 'var(--color-text)'};
   font-size: 14px;
   font-weight: 600;
@@ -86,7 +74,7 @@ const NumBtn = styled.button<{ $sel?: boolean; $zone: string }>`
   transition: all 0.15s;
 
   &:hover:not(:disabled) {
-    border-color: ${p => p.$zone === 'back' ? '#4d96ff' : '#e74c3c'};
+    border-color: ${p => p.$zone === 'back' ? 'var(--color-ball-back)' : 'var(--color-ball-front-big)'};
   }
 
   &:disabled {
@@ -207,6 +195,7 @@ export function NumberSearch() {
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const { t } = useTranslation()
+  const { message } = AntdApp.useApp()
   const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
@@ -219,6 +208,7 @@ export function NumberSearch() {
     abortRef.current = controller
     setLoading(true)
     setErr(null)
+    setResult(null)
     try {
       const r = await fetch(`/api/check?numbers=${encodeURIComponent(fmt(f, b))}`, { signal: controller.signal })
       if (!r.ok) throw new Error(t('numberSearch.queryFailed'))
@@ -320,8 +310,8 @@ export function NumberSearch() {
         <Selector>
           {(open ? (tf.length > 0 || tb.length > 0) : (front.length > 0 || back.length > 0)) ? (
             <BallRow>
-              {(open ? tf : front).map(n => <Ball key={n} $zone="front">{String(n).padStart(2, '0')}</Ball>)}
-              {(open ? tb : back).map(n => <Ball key={n} $zone="back">{String(n).padStart(2, '0')}</Ball>)}
+              {(open ? tf : front).map(n => <Ball key={n} value={n} zone="front" compact />)}
+              {(open ? tb : back).map(n => <Ball key={n} value={n} zone="back" compact />)}
             </BallRow>
           ) : (
             <Placeholder>{t('numberSearch.placeholder')}</Placeholder>

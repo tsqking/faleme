@@ -25,6 +25,10 @@ export const GlobalStyle = createGlobalStyle`
     --color-danger: #e74c3c;
     --color-hot: #e74c3c;
     --color-cold: #3498db;
+    --color-ball-front-small: #6bcb77;
+    --color-ball-front-mid: #f39c12;
+    --color-ball-front-big: #e74c3c;
+    --color-ball-back: #4d96ff;
   }
 
   html[data-theme="dark"] {

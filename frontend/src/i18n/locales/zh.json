@@ -80,6 +80,7 @@
     "back": "后区",
     "recent": "近",
     "draws": "期",
+    "recentDraws": "最近期数",
     "title": "冷热号分析（近{{period}}期）",
     "hotTop10": "热号 Top 10",
     "coldTop10": "冷号 Top 10"

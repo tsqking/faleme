@@ -72,10 +72,12 @@ class MainApiTests(unittest.TestCase):
         self.assertEqual(result["total_matches"], 0)
 
     def test_frequency_counts_front_and_back(self):
-        self.write_data([
-            make_draw("001", "01 02 03 04 05 06 07"),
-            make_draw("002", "01 02 03 04 05 06 07"),
-        ])
+        self.write_data(
+            [
+                make_draw("001", "01 02 03 04 05 06 07"),
+                make_draw("002", "01 02 03 04 05 06 07"),
+            ]
+        )
 
         result = main.get_frequency()
 
@@ -95,6 +97,51 @@ class MainApiTests(unittest.TestCase):
         self.assertEqual(item["pos5"], 5)
         self.assertEqual(item["pos6"], 6)
         self.assertEqual(item["pos7"], 7)
+
+    def test_trend_range_filters_by_numeric_season(self):
+        self.write_data(
+            [
+                make_draw("25001", "01 02 03 04 05 06 07"),
+                make_draw("25002", "01 02 03 04 05 06 07"),
+                make_draw("25003", "01 02 03 04 05 06 07"),
+            ]
+        )
+
+        result = main.get_trend(start_season="2", end_season=None, limit=None)
+
+        self.assertEqual([d["season"] for d in result["items"]], ["25001", "25002", "25003"])
+
+    def test_frequency_skips_malformed_rows(self):
+        items = [
+            make_draw("001", "01 02 03 04 05 06 07"),
+            {"season": "002", "number": "only three"},
+        ]
+        self.write_data(items)
+
+        result = main.get_frequency()
+
+        front_by_num = {f["number"]: f["count"] for f in result["front"]}
+        self.assertEqual(front_by_num[1], 1)
+
+    def test_hot_cold_counts_only_valid_rows_toward_period(self):
+        items = [
+            make_draw("001", "01 02 03 04 05 06 07"),
+            {"season": "002", "number": "bad"},
+            make_draw("003", "01 02 03 04 05 06 07"),
+        ]
+        self.write_data(items)
+
+        result = main.get_hot_cold(period=3)
+
+        front_by_num = {f["number"]: f["count"] for f in result["front"]}
+        self.assertEqual(front_by_num[1], 2)
+
+    def test_health_returns_ok(self):
+        self.write_data([make_draw("001")])
+
+        result = main.health()
+
+        self.assertEqual(result, {"status": "ok"})
 
 
 if __name__ == "__main__":
