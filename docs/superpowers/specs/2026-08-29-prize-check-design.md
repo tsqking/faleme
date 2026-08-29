@@ -50,7 +50,8 @@
   - 参数 `numbers: str`（复用现有 `_number_parts` 校验，非法返回 `matched=False, tier=0`）。
   - 取最新一期；若数据为空返回错误。
   - 计算前区命中数 = `len(set(query_front) & set(win_front))`，后区同理。
-  - 调 `prize.evaluate`，确定奖级。
+  - 调 `prize.evaluate`，确定奖级（`tier` 为整数 0-9，0 表示未中奖）。
+  - 后端**不返回本地化奖级名**，奖级名称由前端按 `tier` 映射 i18n 文案（见前端 i18n 一节）。
   - 一/二等奖金额取 `latest.first_prize_amount` / `second_prize_amount`；若缺失则该奖级金额记为 `None` 并标 `amount_missing=True`。
   - 响应结构：
 
@@ -61,7 +62,6 @@
       "front_hit": 5,
       "back_hit": 0,
       "tier": 3,
-      "tier_name": "三等奖",
       "is_float": false,
       "amount": 10000,
       "amount_missing": false,
@@ -69,7 +69,7 @@
     }
     ```
 
-  - 未中奖：`tier=0, tier_name="未中奖", is_float=false, amount=0, matched=false`。
+  - 未中奖：`tier=0, is_float=false, amount=0, matched=false`。
 
 ### 测试
 
@@ -99,7 +99,7 @@
 ### 类型与 i18n
 
 - `frontend/src/types.ts` 增加 `PrizeResult` 接口（字段对应后端响应）。
-- `frontend/src/i18n/locales/zh.json`、`en.json` 增加 `prizeCheck.*` 文案：`title`、各奖级名、`notWon`、`winPattern`（中 {{f}}+{{b}}）、`amountWan`/`amountYuan`、`floatMissing`、查询/错误文案。
+- `frontend/src/i18n/locales/zh.json`、`en.json` 增加 `prizeCheck.*` 文案：`title`、各奖级名（`tier0` 未中奖 … `tier9` 九等奖）、`notWon`、`winPattern`（中 {{f}}+{{b}}）、`amountWan`/`amountYuan`、`floatMissing`、查询/错误文案。前端按后端返回的 `tier` 整数映射对应奖级名。
 
 ### 接入 `App.tsx`
 
