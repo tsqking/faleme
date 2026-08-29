@@ -143,6 +143,64 @@ class MainApiTests(unittest.TestCase):
 
         self.assertEqual(result, {"status": "ok"})
 
+    def test_check_prize_third_prize(self):
+        self.write_data(
+            [
+                make_draw("001", "01 02 03 04 05 06 07"),
+                make_draw("002", "02 06 19 28 32 05 12"),
+            ]
+        )
+
+        result = main.check_prize(numbers="02 06 19 28 32 01 02")
+
+        self.assertTrue(result["matched"])
+        self.assertEqual(result["tier"], 3)
+        self.assertFalse(result["is_float"])
+        self.assertEqual(result["amount"], 10000)
+        self.assertEqual(result["front_hit"], 5)
+        self.assertEqual(result["back_hit"], 0)
+        self.assertEqual(result["winning"]["season"], "002")
+
+    def test_check_prize_first_prize_uses_draw_amount(self):
+        items = [
+            {
+                "season": "002",
+                "number": "02 06 19 28 32 05 12",
+                "pool": None,
+                "first_prize_count": None,
+                "first_prize_amount": 9835123,
+                "second_prize_count": None,
+                "second_prize_amount": None,
+                "total_bets": None,
+                "draw_date": "2025-08-30",
+            }
+        ]
+        self.write_data(items)
+
+        result = main.check_prize(numbers="02 06 19 28 32 05 12")
+
+        self.assertEqual(result["tier"], 1)
+        self.assertTrue(result["is_float"])
+        self.assertEqual(result["amount"], 9835123)
+        self.assertFalse(result["amount_missing"])
+
+    def test_check_prize_no_win(self):
+        self.write_data([make_draw("001", "01 02 03 04 05 06 07")])
+
+        result = main.check_prize(numbers="11 12 13 14 15 08 09")
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["tier"], 0)
+        self.assertEqual(result["amount"], 0)
+
+    def test_check_prize_invalid_input(self):
+        self.write_data([make_draw("001")])
+
+        result = main.check_prize(numbers="bad input")
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["tier"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

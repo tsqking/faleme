@@ -10,11 +10,12 @@ from typing import Any
 from fastapi import FastAPI, Query, Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.config import DATA_FILE
 from backend.scraper import refresh_data
+from backend import prize as prize_module
 
 logger = logging.getLogger(__name__)
 
@@ -169,6 +170,13 @@ def _all_draws() -> list[dict[str, Any]]:
     return [p for p in (_parse_numbers(d) for d in _load_data()) if p is not None]
 
 
+def _latest_draw() -> dict[str, Any] | None:
+    draws = _all_draws()
+    if not draws:
+        return None
+    return max(draws, key=lambda x: _season_key(x["season"]))
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -255,6 +263,92 @@ def check_numbers(numbers: str = Query(..., description="7个空格分隔的号�
     }
 
 
+@app.get("/api/check-prize")
+def check_prize(numbers: str = Query(..., description="7个空格分隔的号码，如 '02 06 19 28 32 05 12'")):
+    latest = _latest_draw()
+    if latest is None:
+        return {
+            "numbers": numbers,
+            "winning": None,
+            "front_hit": 0,
+            "back_hit": 0,
+            "tier": 0,
+            "is_float": False,
+            "amount": 0,
+            "amount_missing": False,
+            "matched": False,
+        }
+
+    query_parts = _number_parts(numbers)
+    if query_parts is None:
+        return {
+            "numbers": numbers,
+            "winning": {
+                "season": latest["season"],
+                "front": latest["front"],
+                "back": latest["back"],
+                "draw_date": latest["draw_date"],
+            },
+            "front_hit": 0,
+            "back_hit": 0,
+            "tier": 0,
+            "is_float": False,
+            "amount": 0,
+            "amount_missing": False,
+            "matched": False,
+        }
+
+    qf, qb = query_parts
+    front_hit = len(set(qf) & set(latest["front"]))
+    back_hit = len(set(qb) & set(latest["back"]))
+
+    evaluated = prize_module.evaluate(front_hit, back_hit)
+    if evaluated is None:
+        return {
+            "numbers": numbers,
+            "winning": {
+                "season": latest["season"],
+                "front": latest["front"],
+                "back": latest["back"],
+                "draw_date": latest["draw_date"],
+            },
+            "front_hit": front_hit,
+            "back_hit": back_hit,
+            "tier": 0,
+            "is_float": False,
+            "amount": 0,
+            "amount_missing": False,
+            "matched": False,
+        }
+
+    tier = evaluated["tier"]
+    is_float = evaluated["is_float"]
+    if is_float:
+        amount_key = "first_prize_amount" if tier == 1 else "second_prize_amount"
+        amount = latest.get(amount_key)
+        amount_missing = amount is None
+    else:
+        amount = evaluated["fixed"]
+        amount_missing = amount is None
+
+    return {
+        "numbers": numbers,
+        "winning": {
+            "season": latest["season"],
+            "front": latest["front"],
+            "back": latest["back"],
+            "draw_date": latest["draw_date"],
+        },
+        "front_hit": front_hit,
+        "back_hit": back_hit,
+        "tier": tier,
+        "is_float": is_float,
+        "amount": amount if amount is not None else 0,
+        "amount_missing": amount_missing,
+        "matched": tier > 0,
+    }
+
+
 @app.get("/api/stats/hot-cold")
 def get_hot_cold(period: int = Query(30, ge=1)):
     recent = sorted(_all_draws(), key=lambda x: _season_key(x["season"]), reverse=True)[:period]
@@ -285,6 +379,8 @@ if os.path.isfile(_INDEX_HTML):
 
     @app.get("/{path:path}")
     async def serve_spa(request: Request, path: str):
+        if path.startswith("api/"):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
         file_path = os.path.realpath(os.path.join(FRONTEND_DIST, path))
         if (file_path == _FRONTEND_DIST_REAL or file_path.startswith(_FRONTEND_DIST_REAL + os.sep)) and os.path.isfile(
             file_path
