@@ -95,13 +95,13 @@ cd ..
 bash deploy/start.sh
 ```
 
-该脚本会同时启动后端 (FastAPI, 端口 8000) 和前端 (Vite Dev Server, 端口 5173)。
+该脚本会同时启动后端 (FastAPI, 端口 8100) 和前端 (Vite Dev Server, 端口 5173)。
 
 ### 分别启动
 
 ```bash
 # 后端
-uvicorn backend.main:app --host 127.0.0.1 --port 8000
+uvicorn backend.main:app --host 127.0.0.1 --port 8100
 
 # 前端
 cd frontend
@@ -116,7 +116,7 @@ pnpm dev
 docker compose -f deploy/docker-compose.yml up --build
 ```
 
-采用多阶段构建：第一阶段用 Node 构建前端静态资源，第二阶段在 Python 镜像中安装后端依赖并托管前端产物，由 FastAPI 统一提供 API 与静态站点服务。容器以非 root 用户运行，启动后访问 http://localhost:8000。
+采用多阶段构建：第一阶段用 Node 构建前端静态资源，第二阶段在 Python 镜像中安装后端依赖并托管前端产物，由 FastAPI 统一提供 API 与静态站点服务。容器以非 root 用户运行，启动后访问 http://localhost:8100。
 
 生产环境可通过 `CORS_ALLOW_ORIGINS` 环境变量配置允许的跨域来源（逗号分隔）。
 
@@ -131,7 +131,7 @@ docker compose -f deploy/docker-compose.yml up --build
 | GET | `/api/stats/hot-cold?period=30` | 冷热号排名 |
 | GET | `/api/check?numbers=02 06 19 28 32 05 12` | 查询号码是否中奖 |
 
-启动后访问 http://localhost:8000/docs 查看完整的 Swagger 文档。
+启动后访问 http://localhost:8100/docs 查看完整的 Swagger 文档。
 
 ## 测试
 

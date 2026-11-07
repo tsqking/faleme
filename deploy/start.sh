@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-BACKEND_PORT=8000
+BACKEND_PORT=8100
 FRONTEND_PORT=5173
 
 case "$(uname -s)" in

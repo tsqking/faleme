@@ -5,7 +5,7 @@ React + TypeScript + Vite single-page app for the Faleme lottery dashboard.
 ## Requirements
 
 - Node.js 20+ (pnpm is pinned via `packageManager`)
-- The backend API running at `http://127.0.0.1:8000` (see root `README.md`)
+- The backend API running at `http://127.0.0.1:8100` (see root `README.md`)
 
 ## Scripts
 
@@ -17,7 +17,7 @@ React + TypeScript + Vite single-page app for the Faleme lottery dashboard.
 | `pnpm test`      | Run unit tests (vitest)         |
 | `pnpm lint`      | Run ESLint                      |
 
-The dev server proxies `/api` requests to `http://127.0.0.1:8000` (see `vite.config.ts`).
+The dev server proxies `/api` requests to `http://127.0.0.1:8100` (see `vite.config.ts`).
 
 ## Structure
 
