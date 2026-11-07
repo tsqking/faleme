@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { Popover, message } from 'antd'
+import { App as AntdApp } from 'antd'
 import { InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons'
-import type { CheckResult } from '../types'
+import type { CheckResult, PrizeResult } from '../types'
+import { Ball } from './Ball'
+import { NumberSelector } from './NumberSelector'
+import { formatPrize } from '../utils/format'
 
 const SearchRow = styled.div`
   display: flex;
@@ -11,135 +14,6 @@ const SearchRow = styled.div`
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 16px;
-`
-
-const Selector = styled.div`
-  flex: 1 1 200px;
-  min-width: 0;
-  padding: 8px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-
-  &:hover {
-    border-color: var(--color-primary);
-  }
-`
-
-const BallRow = styled.div`
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  min-height: 32px;
-  align-items: center;
-`
-
-const Ball = styled.span<{ $zone: string }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  background: ${p => p.$zone === 'back' ? '#4d96ff' : '#e74c3c'};
-`
-
-const Placeholder = styled.span`
-  color: var(--color-text-tertiary);
-  font-size: 13px;
-  line-height: 32px;
-`
-
-const PopContent = styled.div`
-  max-width: 420px;
-  width: calc(100vw - 32px);
-`
-
-const SectionTitle = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--color-text);
-`
-
-const Grid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 16px;
-`
-
-const NumBtn = styled.button<{ $sel?: boolean; $zone: string }>`
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : 'var(--color-border)'};
-  background: ${p => p.$sel ? (p.$zone === 'back' ? '#4d96ff' : '#e74c3c') : 'var(--color-surface)'};
-  color: ${p => p.$sel ? '#fff' : 'var(--color-text)'};
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-
-  &:hover:not(:disabled) {
-    border-color: ${p => p.$zone === 'back' ? '#4d96ff' : '#e74c3c'};
-  }
-
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
-  }
-`
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-`
-
-const CfmBtn = styled.button`
-  padding: 6px 20px;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-`
-
-const ClrBtn = styled.button`
-  padding: 6px 14px;
-  background: var(--color-surface);
-  color: var(--color-danger);
-  border: 1px solid var(--color-danger);
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-`
-
-const CclBtn = styled.button`
-  padding: 6px 20px;
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
 `
 
 const QueryBtn = styled.button`
@@ -156,6 +30,13 @@ const QueryBtn = styled.button`
   &:hover {
     opacity: 0.85;
   }
+`
+
+const ResultArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 100%;
 `
 
 const ResultTag = styled.span<{ $hit: boolean }>`
@@ -188,6 +69,30 @@ const ResultTag = styled.span<{ $hit: boolean }>`
   }
 `
 
+const Amount = styled.div`
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primary);
+`
+
+const Winning = styled.div`
+  border-top: 1px dashed var(--color-border);
+  padding-top: 10px;
+`
+
+const WinLabel = styled.div`
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+`
+
+const BallRow = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+`
+
 const ErrMsg = styled.span`
   color: var(--color-danger);
   font-size: 12px;
@@ -200,13 +105,12 @@ function fmt(f: number[], b: number[]): string {
 export function NumberSearch() {
   const [front, setFront] = useState<number[]>([2, 6, 19, 28, 32])
   const [back, setBack] = useState<number[]>([5, 12])
-  const [open, setOpen] = useState(false)
-  const [tf, setTf] = useState<number[]>(front)
-  const [tb, setTb] = useState<number[]>(back)
-  const [result, setResult] = useState<CheckResult | null>(null)
+  const [history, setHistory] = useState<CheckResult | null>(null)
+  const [prize, setPrize] = useState<PrizeResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const { t } = useTranslation()
+  const { message } = AntdApp.useApp()
   const abortRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
@@ -219,48 +123,22 @@ export function NumberSearch() {
     abortRef.current = controller
     setLoading(true)
     setErr(null)
+    setHistory(null)
+    setPrize(null)
     try {
-      const r = await fetch(`/api/check?numbers=${encodeURIComponent(fmt(f, b))}`, { signal: controller.signal })
-      if (!r.ok) throw new Error(t('numberSearch.queryFailed'))
-      const d: CheckResult = await r.json()
-      setResult(d)
+      const [rh, rp] = await Promise.all([
+        fetch(`/api/check?numbers=${encodeURIComponent(fmt(f, b))}`, { signal: controller.signal }),
+        fetch(`/api/check-prize?numbers=${encodeURIComponent(fmt(f, b))}`, { signal: controller.signal }),
+      ])
+      if (!rh.ok || !rp.ok) throw new Error(t('numberSearch.queryFailed'))
+      setHistory((await rh.json()) as CheckResult)
+      setPrize((await rp.json()) as PrizeResult)
     } catch (e) {
       if (controller.signal.aborted) return
       setErr(e instanceof Error ? e.message : t('numberSearch.queryError'))
     } finally {
       if (!controller.signal.aborted) setLoading(false)
     }
-  }
-
-  const toggleF = (n: number) => {
-    setTf(p => {
-      if (p.includes(n)) return p.filter(x => x !== n)
-      if (p.length >= 5) return p
-      return [...p, n].sort((a, b) => a - b)
-    })
-  }
-
-  const toggleB = (n: number) => {
-    setTb(p => {
-      if (p.includes(n)) return p.filter(x => x !== n)
-      if (p.length >= 2) return p
-      return [...p, n].sort((a, b) => a - b)
-    })
-  }
-
-  const clear = () => {
-    setTf([])
-    setTb([])
-    setFront([])
-    setBack([])
-    setResult(null)
-    setErr(null)
-  }
-
-  const confirm = () => {
-    setFront(tf)
-    setBack(tb)
-    setOpen(false)
   }
 
   const doQuery = () => {
@@ -271,72 +149,43 @@ export function NumberSearch() {
     }
   }
 
-  const cancel = () => {
-    setTf(front)
-    setTb(back)
-    setOpen(false)
-  }
-
-  const handleOpen = (v: boolean) => {
-    if (v) { setTf(front); setTb(back); setResult(null); setErr(null) }
-    setOpen(v)
-  }
-
-  const ready = tf.length === 5 && tb.length === 2
-  const frontNums = Array.from({ length: 35 }, (_, i) => i + 1)
-  const backNums = Array.from({ length: 12 }, (_, i) => i + 1)
-
-  const pop = (
-    <PopContent>
-      <SectionTitle>{t('numberSearch.frontTitle')}{tf.length}/5</SectionTitle>
-      <Grid>
-        {frontNums.map(n => (
-          <NumBtn key={n} $zone="front" $sel={tf.includes(n)} disabled={!tf.includes(n) && tf.length >= 5} onClick={() => toggleF(n)}>
-            {String(n).padStart(2, '0')}
-          </NumBtn>
-        ))}
-      </Grid>
-      <SectionTitle>{t('numberSearch.backTitle')}{tb.length}/2</SectionTitle>
-      <Grid>
-        {backNums.map(n => (
-          <NumBtn key={n} $zone="back" $sel={tb.includes(n)} disabled={!tb.includes(n) && tb.length >= 2} onClick={() => toggleB(n)}>
-            {String(n).padStart(2, '0')}
-          </NumBtn>
-        ))}
-      </Grid>
-      <Actions>
-        <ClrBtn onClick={clear}>{t('numberSearch.clear')}</ClrBtn>
-        <span style={{ display: 'flex', gap: 8 }}>
-          <CclBtn onClick={cancel}>{t('numberSearch.cancel')}</CclBtn>
-          <CfmBtn disabled={!ready} onClick={confirm}>{t('numberSearch.confirm')}</CfmBtn>
-        </span>
-      </Actions>
-    </PopContent>
-  )
-
   return (
     <SearchRow>
-      <Popover content={pop} trigger="click" open={open} onOpenChange={handleOpen} placement="bottomLeft">
-        <Selector>
-          {(open ? (tf.length > 0 || tb.length > 0) : (front.length > 0 || back.length > 0)) ? (
-            <BallRow>
-              {(open ? tf : front).map(n => <Ball key={n} $zone="front">{String(n).padStart(2, '0')}</Ball>)}
-              {(open ? tb : back).map(n => <Ball key={n} $zone="back">{String(n).padStart(2, '0')}</Ball>)}
-            </BallRow>
-          ) : (
-            <Placeholder>{t('numberSearch.placeholder')}</Placeholder>
-          )}
-        </Selector>
-      </Popover>
+      <NumberSelector front={front} back={back} onChange={(f, b) => { setFront(f); setBack(b) }} />
       <QueryBtn onClick={doQuery}>{t('numberSearch.query')}</QueryBtn>
       {err && <ErrMsg>{err}</ErrMsg>}
-      {!loading && result && (
-        <ResultTag $hit={result.matched}>
-          {result.matched ? <CheckCircleOutlined /> : <InfoCircleOutlined />}
-          {result.matched
-            ? t('numberSearch.matched', { count: result.total_matches, seasons: result.matches.map(m => m.season).join(', ') })
-            : t('numberSearch.neverMatched')}
-        </ResultTag>
+      {!loading && history && (
+        <ResultArea>
+          <ResultTag $hit={history.matched}>
+            {history.matched ? <CheckCircleOutlined /> : <InfoCircleOutlined />}
+            {history.matched
+              ? t('numberSearch.matched', { count: history.total_matches, seasons: history.matches.map(m => m.season).join(', ') })
+              : t('numberSearch.neverMatched')}
+          </ResultTag>
+          {prize && (
+            <ResultTag $hit={prize.matched}>
+              {prize.matched ? <CheckCircleOutlined /> : <InfoCircleOutlined />}
+              {t(`prizeCheck.tier${prize.tier}`)}
+              {prize.matched && <> · {t('prizeCheck.winPattern', { f: prize.front_hit, b: prize.back_hit })}</>}
+            </ResultTag>
+          )}
+          {prize?.matched && (
+            <Amount>
+              {t('prizeCheck.amount')}：{formatPrize(prize.amount, prize.is_float, prize.amount_missing, t)}
+            </Amount>
+          )}
+          {prize && prize.winning && (
+            <Winning>
+              <WinLabel>
+                {t('prizeCheck.winningTitle')}（{t('prizeCheck.season')} {prize.winning.season} · {prize.winning.draw_date ?? t('common.dash')}）
+              </WinLabel>
+              <BallRow>
+                {prize.winning.front.map(n => <Ball key={'f' + n} value={n} zone="front" compact />)}
+                {prize.winning.back.map(n => <Ball key={'b' + n} value={n} zone="back" compact />)}
+              </BallRow>
+            </Winning>
+          )}
+        </ResultArea>
       )}
     </SearchRow>
   )

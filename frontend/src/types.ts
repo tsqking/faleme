@@ -62,3 +62,15 @@ export interface CheckResult {
   matches: { season: string; number: string }[]
   total_matches: number
 }
+
+export interface PrizeResult {
+  numbers: string
+  winning: { season: string; front: number[]; back: number[]; draw_date: string | null } | null
+  front_hit: number
+  back_hit: number
+  tier: number
+  is_float: boolean
+  amount: number
+  amount_missing: boolean
+  matched: boolean
+}

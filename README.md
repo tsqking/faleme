@@ -11,7 +11,7 @@
 - **频率统计** - 前区 (1-35) 和后区 (1-12) 各号码的出现频次柱状图
 - **冷热号分析** - 自定义统计期数 (默认近 30 期)，排名冷热号码
 - **全屏查看** - 走势图、频率图、冷热号等卡片支持一键全屏
-- **多语言支持** - 中文 / English / 日本語 / Français / 한국어 / Русский / ภาษาไทย
+- **多语言支持** - 中文 / English
 
 ## 技术栈
 
@@ -42,6 +42,7 @@ faleme/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/  # UI 组件
+│   │   │   ├── Ball.tsx             # 共享号码球组件
 │   │   │   ├── ErrorBoundary.tsx
 │   │   │   ├── FrequencyChart.tsx
 │   │   │   ├── FullscreenCard.tsx
@@ -54,6 +55,7 @@ faleme/
 │   │   ├── hooks/       # 自定义 Hooks
 │   │   ├── i18n/        # 多语言资源
 │   │   ├── styles/      # 全局与组件样式
+│   │   ├── utils/       # 共享工具函数
 │   │   ├── types.ts     # TypeScript 类型定义
 │   │   ├── App.tsx      # 根组件
 │   │   └── main.tsx     # 入口文件
@@ -122,6 +124,7 @@ docker compose -f deploy/docker-compose.yml up --build
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| GET | `/api/health` | 健康检查 |
 | GET | `/api/history?page=1&page_size=20` | 分页获取开奖历史 |
 | GET | `/api/stats/frequency` | 号码出现频率统计 |
 | GET | `/api/stats/trend?start_season=&end_season=&limit=` | 走势数据 |
@@ -138,7 +141,22 @@ docker compose -f deploy/docker-compose.yml up --build
 python -m unittest discover -s backend -p "test_*.py"
 ```
 
-覆盖范围：数据抓取的 HTML 解析与整数解析容错，以及历史 / 频率 / 走势 / 号码查询等 API。
+代码风格使用 [ruff](https://github.com/astral-sh/ruff) 检查与格式化（开发依赖见 `backend/requirements-dev.txt`）：
+
+```bash
+pip install -r backend/requirements-dev.txt
+ruff check backend common
+ruff format --check backend common
+```
+
+前端使用 vitest + Testing Library：
+
+```bash
+cd frontend
+pnpm test
+```
+
+覆盖范围：数据抓取的 HTML 解析、整数解析容错、原子写入，以及历史 / 频率 / 走势 / 号码查询 / 健康检查等 API；前端包含数据加载 Hook（初始加载、按参数增量刷新、错误处理）与格式化工具。
 
 ## 数据来源
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type ReactNode } from 'react'
+import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { ChartSection, ChartHeader } from '../styles/shared'
@@ -9,32 +9,54 @@ interface Props {
   children: ReactNode
 }
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
 export function FullscreenCard({ title, controls, children }: Props) {
   const { t } = useTranslation()
   const [fs, setFs] = useState(false)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
 
   const onKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') setFs(false)
+    if (e.key === 'Escape') {
+      setFs(false)
+      return
+    }
+    if (e.key !== 'Tab' || !overlayRef.current) return
+    const focusable = Array.from(overlayRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+    if (focusable.length === 0) return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
   }, [])
 
   useEffect(() => {
-    if (fs) {
-      document.addEventListener('keydown', onKeyDown)
-      document.body.style.overflow = 'hidden'
-    }
+    if (!fs) return
+    document.addEventListener('keydown', onKeyDown)
+    document.body.style.overflow = 'hidden'
+    const previousFocus = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
     return () => {
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = ''
+      previousFocus?.focus()
     }
   }, [fs, onKeyDown])
 
   return (
     <>
       {fs ? (
-        <Overlay>
+        <Overlay ref={overlayRef} role="dialog" aria-modal="true" aria-label={title}>
           <OverlayHeader>
             <h2>{title}</h2>
-            <CloseButton onClick={() => setFs(false)} title={t('fullscreenCard.restore')}>✕</CloseButton>
+            <CloseButton ref={closeRef} onClick={() => setFs(false)} aria-label={t('fullscreenCard.restore')}>✕</CloseButton>
           </OverlayHeader>
           <OverlayBody>{children}</OverlayBody>
         </Overlay>
@@ -44,7 +66,7 @@ export function FullscreenCard({ title, controls, children }: Props) {
             <h3>{title}</h3>
             <HeaderRight>
               {controls}
-              <ExpandButton onClick={() => setFs(true)} title={t('fullscreenCard.fullscreen')}>⛶</ExpandButton>
+              <ExpandButton onClick={() => setFs(true)} aria-label={t('fullscreenCard.fullscreen')}>⛶</ExpandButton>
             </HeaderRight>
           </ChartHeader>
           {children}

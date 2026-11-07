@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+import tempfile
 from datetime import date
 from typing import Any
 
@@ -22,6 +24,22 @@ def _parse_int(text: str) -> int | None:
         return int(value)
     except ValueError:
         return None
+
+
+def _write_json_atomic(path: str, payload: dict[str, Any]) -> None:
+    directory = os.path.dirname(os.path.abspath(path))
+    fd, tmp_path = tempfile.mkstemp(dir=directory, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+        os.replace(tmp_path, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
 
 def refresh_data() -> list[dict[str, Any]]:
     url = "https://datachart.500star.com/dlt/history/newinc/history.php"
@@ -49,24 +67,28 @@ def refresh_data() -> list[dict[str, Any]]:
         tds = tr.find_all("td")
         if len(tds) < 15:
             continue
-        data.append({
-            "season": tds[0].get_text(strip=True),
-            "number": f"{tds[1].get_text(strip=True)} {tds[2].get_text(strip=True)} {tds[3].get_text(strip=True)} "
-                      f"{tds[4].get_text(strip=True)} {tds[5].get_text(strip=True)} "
-                      f"{tds[6].get_text(strip=True)} {tds[7].get_text(strip=True)}",
-            "pool": _parse_int(tds[8].get_text(strip=True)),
-            "first_prize_count": _parse_int(tds[9].get_text(strip=True)),
-            "first_prize_amount": _parse_int(tds[10].get_text(strip=True)),
-            "second_prize_count": _parse_int(tds[11].get_text(strip=True)),
-            "second_prize_amount": _parse_int(tds[12].get_text(strip=True)),
-            "total_bets": _parse_int(tds[13].get_text(strip=True)),
-            "draw_date": tds[14].get_text(strip=True),
-        })
+        data.append(
+            {
+                "season": tds[0].get_text(strip=True),
+                "number": f"{tds[1].get_text(strip=True)} {tds[2].get_text(strip=True)} {tds[3].get_text(strip=True)} "
+                f"{tds[4].get_text(strip=True)} {tds[5].get_text(strip=True)} "
+                f"{tds[6].get_text(strip=True)} {tds[7].get_text(strip=True)}",
+                "pool": _parse_int(tds[8].get_text(strip=True)),
+                "first_prize_count": _parse_int(tds[9].get_text(strip=True)),
+                "first_prize_amount": _parse_int(tds[10].get_text(strip=True)),
+                "second_prize_count": _parse_int(tds[11].get_text(strip=True)),
+                "second_prize_amount": _parse_int(tds[12].get_text(strip=True)),
+                "total_bets": _parse_int(tds[13].get_text(strip=True)),
+                "draw_date": tds[14].get_text(strip=True),
+            }
+        )
 
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump({
+    _write_json_atomic(
+        DATA_FILE,
+        {
             "_fetched_date": date.today().isoformat(),
             "data": data,
-        }, f, indent=2, ensure_ascii=False)
+        },
+    )
 
     return data

@@ -66,6 +66,7 @@ export function HotColdRank({ data, period, onPeriodChange }: Props) {
           min={1}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          aria-label={t('hotCold.recentDraws')}
           style={{
             width: 60,
             padding: '4px 8px',

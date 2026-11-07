@@ -1,9 +1,10 @@
-import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import type { HistoryResponse } from '../types'
 import { TotalLabel, Pagination } from '../styles/shared'
 import { FullscreenCard } from './FullscreenCard'
 import { TableWrapper, HistoryTableStyle } from '../styles/HistoryTableStyles'
+import { Ball } from './Ball'
+import { formatWan } from '../utils/format'
 
 interface Props {
   data: HistoryResponse
@@ -12,10 +13,7 @@ interface Props {
 
 export function HistoryTable({ data, onPageChange }: Props) {
   const { t } = useTranslation()
-  const fmtMoney = (n: number | null): string => {
-    if (n == null) return t('common.dash')
-    return (n / 10000).toFixed(0) + t('common.wan')
-  }
+  const fmtMoney = (n: number | null): string => formatWan(n, t('common.dash'), t('common.wan'))
   return (
     <FullscreenCard title={t('historyTable.title')} controls={<TotalLabel>{t('historyTable.total', { count: data.total })}</TotalLabel>}>
       <TableWrapper>
@@ -37,16 +35,12 @@ export function HistoryTable({ data, onPageChange }: Props) {
                 <td className="season-cell">{item.season}</td>
                 {item.front.map((n) => (
                   <td key={`f${n}`}>
-                    <Ball $zone="front" $size={n >= 25 ? 'big' : n >= 15 ? 'mid' : 'small'}>
-                      {String(n).padStart(2, '0')}
-                    </Ball>
+                    <Ball value={n} zone="front" tier={n >= 25 ? 'big' : n >= 15 ? 'mid' : 'small'} />
                   </td>
                 ))}
                 {item.back.map((n) => (
                   <td key={`b${n}`}>
-                    <Ball $zone="back">
-                      {String(n).padStart(2, '0')}
-                    </Ball>
+                    <Ball value={n} zone="back" />
                   </td>
                 ))}
                 <td className="info-cell">{item.draw_date ?? t('common.dash')}</td>
@@ -66,22 +60,3 @@ export function HistoryTable({ data, onPageChange }: Props) {
     </FullscreenCard>
   )
 }
-
-const Ball = styled.span<{ $zone: 'front' | 'back'; $size?: 'small' | 'mid' | 'big' }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 13px;
-  font-weight: 600;
-  flex-shrink: 0;
-  color: #fff;
-  background: ${p => {
-    if (p.$zone === 'back') return '#4d96ff'
-    if (p.$size === 'small') return '#6bcb77'
-    if (p.$size === 'mid') return '#f39c12'
-    return '#e74c3c'
-  }};
-`

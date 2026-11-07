@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { FrequencyResponse, DrawItem } from '../types'
 import { StatsGrid, StatCard, StatLabel, StatValue, StatDesc } from '../styles/StatsCardsStyles'
+import { formatWan } from '../utils/format'
 
 interface Props {
   data: FrequencyResponse
@@ -11,10 +12,7 @@ interface Props {
 export function StatsCards({ data, latestDraw, totalDraws }: Props) {
   const { t } = useTranslation()
 
-  const fmtMoney = (n: number | null): string => {
-    if (n == null) return t('common.dash')
-    return (n / 10000).toFixed(0) + t('common.wan')
-  }
+  const fmtMoney = (n: number | null): string => formatWan(n, t('common.dash'), t('common.wan'))
   const totalFront = data.front.reduce((s, x) => s + x.count, 0)
   const maxFront = data.front.reduce((a, b) => (b.count > a.count ? b : a))
   const maxBack = data.back.reduce((a, b) => (b.count > a.count ? b : a))

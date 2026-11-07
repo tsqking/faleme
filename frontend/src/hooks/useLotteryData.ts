@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import type { HistoryResponse, FrequencyResponse, TrendResponse, HotColdResponse } from '../types'
 
 interface LotteryData {
@@ -10,83 +10,85 @@ interface LotteryData {
   error: string | null
 }
 
-function parseJson<T>(r: Response): Promise<T> {
-  if (!r.ok) throw new Error(`HTTP ${r.status}`)
-  return r.json()
+async function fetchJson<T>(url: string, signal: AbortSignal): Promise<T> {
+  const r = await fetch(url, { signal })
+  if (!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText}`)
+  return r.json() as Promise<T>
 }
 
+const getErrorMsg = (e: unknown): string =>
+  e instanceof Error ? e.message : 'Failed to fetch data'
+
 export function useLotteryData(page: number, pageSize: number = 15, period: number = 30): LotteryData {
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [history, setHistory] = useState<HistoryResponse | null>(null)
   const [frequency, setFrequency] = useState<FrequencyResponse | null>(null)
   const [trend, setTrend] = useState<TrendResponse | null>(null)
   const [hotCold, setHotCold] = useState<HotColdResponse | null>(null)
-  const initialLoad = useRef(true)
-  const prevPage = useRef(page)
-  const prevPageSize = useRef(pageSize)
-  const prevPeriod = useRef(period)
+  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
     const { signal } = controller
-
-    const getErrorMsg = (e: unknown): string =>
-      e instanceof Error ? e.message : 'Failed to fetch data'
-
-    const fetchData = async () => {
-      if (!initialLoad.current) {
-        if (period !== prevPeriod.current) {
-          try {
-            setError(null)
-            const hc = await fetch(`/api/stats/hot-cold?period=${period}`, { signal }).then<HotColdResponse>(r => parseJson(r))
-            if (!signal.aborted) { setHotCold(hc); prevPeriod.current = period }
-          } catch (e) {
-            if (!signal.aborted) setError(getErrorMsg(e))
-          }
-        }
-        if (page !== prevPage.current || pageSize !== prevPageSize.current) {
-          try {
-            setError(null)
-            const h = await fetch(`/api/history?page=${page}&page_size=${pageSize}`, { signal }).then<HistoryResponse>(r => parseJson(r))
-            if (!signal.aborted) { setHistory(h); prevPage.current = page; prevPageSize.current = pageSize }
-          } catch (e) {
-            if (!signal.aborted) setError(getErrorMsg(e))
-          }
-        }
-        return
-      }
-
-      setLoading(true)
+    const load = async () => {
       setError(null)
-
       try {
-        const [h, f, t, hc] = await Promise.all([
-          fetch(`/api/history?page=${page}&page_size=${pageSize}`, { signal }).then<HistoryResponse>(r => parseJson(r)),
-          fetch('/api/stats/frequency', { signal }).then<FrequencyResponse>(r => parseJson(r)),
-          fetch('/api/stats/trend', { signal }).then<TrendResponse>(r => parseJson(r)),
-          fetch(`/api/stats/hot-cold?period=${period}`, { signal }).then<HotColdResponse>(r => parseJson(r)),
+        const [f, t] = await Promise.all([
+          fetchJson<FrequencyResponse>('/api/stats/frequency', signal),
+          fetchJson<TrendResponse>('/api/stats/trend', signal),
         ])
-        if (!signal.aborted) {
-          setHistory(h)
-          setFrequency(f)
-          setTrend(t)
-          setHotCold(hc)
-          prevPage.current = page
-          prevPageSize.current = pageSize
-          prevPeriod.current = period
-          initialLoad.current = false
-        }
+        if (signal.aborted) return
+        setFrequency(f)
+        setTrend(t)
       } catch (e) {
-        if (!signal.aborted) setError(getErrorMsg(e))
-      } finally {
-        if (!signal.aborted) setLoading(false)
+        if (signal.aborted) return
+        setFailed(true)
+        setError(getErrorMsg(e))
       }
     }
-
-    fetchData()
+    load()
     return () => controller.abort()
-  }, [page, pageSize, period])
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const { signal } = controller
+    const load = async () => {
+      setError(null)
+      try {
+        const h = await fetchJson<HistoryResponse>(`/api/history?page=${page}&page_size=${pageSize}`, signal)
+        if (signal.aborted) return
+        setHistory(h)
+      } catch (e) {
+        if (signal.aborted) return
+        setFailed(true)
+        setError(getErrorMsg(e))
+      }
+    }
+    load()
+    return () => controller.abort()
+  }, [page, pageSize])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const { signal } = controller
+    const load = async () => {
+      setError(null)
+      try {
+        const hc = await fetchJson<HotColdResponse>(`/api/stats/hot-cold?period=${period}`, signal)
+        if (signal.aborted) return
+        setHotCold(hc)
+      } catch (e) {
+        if (signal.aborted) return
+        setFailed(true)
+        setError(getErrorMsg(e))
+      }
+    }
+    load()
+    return () => controller.abort()
+  }, [period])
+
+  const loading = !failed && (history === null || frequency === null || trend === null || hotCold === null)
 
   return { history, frequency, trend, hotCold, loading, error }
 }

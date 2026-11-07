@@ -72,10 +72,12 @@ class MainApiTests(unittest.TestCase):
         self.assertEqual(result["total_matches"], 0)
 
     def test_frequency_counts_front_and_back(self):
-        self.write_data([
-            make_draw("001", "01 02 03 04 05 06 07"),
-            make_draw("002", "01 02 03 04 05 06 07"),
-        ])
+        self.write_data(
+            [
+                make_draw("001", "01 02 03 04 05 06 07"),
+                make_draw("002", "01 02 03 04 05 06 07"),
+            ]
+        )
 
         result = main.get_frequency()
 
@@ -95,6 +97,109 @@ class MainApiTests(unittest.TestCase):
         self.assertEqual(item["pos5"], 5)
         self.assertEqual(item["pos6"], 6)
         self.assertEqual(item["pos7"], 7)
+
+    def test_trend_range_filters_by_numeric_season(self):
+        self.write_data(
+            [
+                make_draw("25001", "01 02 03 04 05 06 07"),
+                make_draw("25002", "01 02 03 04 05 06 07"),
+                make_draw("25003", "01 02 03 04 05 06 07"),
+            ]
+        )
+
+        result = main.get_trend(start_season="2", end_season=None, limit=None)
+
+        self.assertEqual([d["season"] for d in result["items"]], ["25001", "25002", "25003"])
+
+    def test_frequency_skips_malformed_rows(self):
+        items = [
+            make_draw("001", "01 02 03 04 05 06 07"),
+            {"season": "002", "number": "only three"},
+        ]
+        self.write_data(items)
+
+        result = main.get_frequency()
+
+        front_by_num = {f["number"]: f["count"] for f in result["front"]}
+        self.assertEqual(front_by_num[1], 1)
+
+    def test_hot_cold_counts_only_valid_rows_toward_period(self):
+        items = [
+            make_draw("001", "01 02 03 04 05 06 07"),
+            {"season": "002", "number": "bad"},
+            make_draw("003", "01 02 03 04 05 06 07"),
+        ]
+        self.write_data(items)
+
+        result = main.get_hot_cold(period=3)
+
+        front_by_num = {f["number"]: f["count"] for f in result["front"]}
+        self.assertEqual(front_by_num[1], 2)
+
+    def test_health_returns_ok(self):
+        self.write_data([make_draw("001")])
+
+        result = main.health()
+
+        self.assertEqual(result, {"status": "ok"})
+
+    def test_check_prize_third_prize(self):
+        self.write_data(
+            [
+                make_draw("001", "01 02 03 04 05 06 07"),
+                make_draw("002", "02 06 19 28 32 05 12"),
+            ]
+        )
+
+        result = main.check_prize(numbers="02 06 19 28 32 01 02")
+
+        self.assertTrue(result["matched"])
+        self.assertEqual(result["tier"], 3)
+        self.assertFalse(result["is_float"])
+        self.assertEqual(result["amount"], 10000)
+        self.assertEqual(result["front_hit"], 5)
+        self.assertEqual(result["back_hit"], 0)
+        self.assertEqual(result["winning"]["season"], "002")
+
+    def test_check_prize_first_prize_uses_draw_amount(self):
+        items = [
+            {
+                "season": "002",
+                "number": "02 06 19 28 32 05 12",
+                "pool": None,
+                "first_prize_count": None,
+                "first_prize_amount": 9835123,
+                "second_prize_count": None,
+                "second_prize_amount": None,
+                "total_bets": None,
+                "draw_date": "2025-08-30",
+            }
+        ]
+        self.write_data(items)
+
+        result = main.check_prize(numbers="02 06 19 28 32 05 12")
+
+        self.assertEqual(result["tier"], 1)
+        self.assertTrue(result["is_float"])
+        self.assertEqual(result["amount"], 9835123)
+        self.assertFalse(result["amount_missing"])
+
+    def test_check_prize_no_win(self):
+        self.write_data([make_draw("001", "01 02 03 04 05 06 07")])
+
+        result = main.check_prize(numbers="11 12 13 14 15 08 09")
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["tier"], 0)
+        self.assertEqual(result["amount"], 0)
+
+    def test_check_prize_invalid_input(self):
+        self.write_data([make_draw("001")])
+
+        result = main.check_prize(numbers="bad input")
+
+        self.assertFalse(result["matched"])
+        self.assertEqual(result["tier"], 0)
 
 
 if __name__ == "__main__":

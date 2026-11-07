@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 export const ChartSection = styled.div`
   background: var(--color-surface);
@@ -94,32 +94,3 @@ export const TotalLabel = styled.span`
   color: var(--color-text-tertiary);
 `
 
-export const Ball = styled.span<{ $zone?: 'front' | 'back'; $size?: 'small' | 'mid' | 'big' }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  flex-shrink: 0;
-  color: #fff;
-
-  ${p => p.$zone === 'back' && css`
-    background: #4d96ff;
-  `}
-
-  ${p => p.$zone === 'front' && p.$size === 'small' && css`
-    background: #6bcb77;
-  `}
-
-  ${p => p.$zone === 'front' && p.$size === 'mid' && css`
-    background: #f39c12;
-  `}
-
-  ${p => p.$zone === 'front' && p.$size === 'big' && css`
-    background: #e74c3c;
-  `}
-`

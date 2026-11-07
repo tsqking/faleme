@@ -158,6 +158,7 @@ function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectPro
         onChange={e => { setQuery(e.target.value); setOpen(true) }}
         onFocus={() => { setQuery(value); setOpen(true) }}
         placeholder={placeholder}
+        aria-label={placeholder}
       />
       {open && (
         <Dropdown>
@@ -176,7 +177,15 @@ function SeasonSelect({ placeholder, value, seasons, onChange }: SeasonSelectPro
 export function TrendChart({ data }: Props) {
   const { t } = useTranslation()
   const { gridStroke, tickFill, tooltipStyle } = useChartTheme()
-  const LABELS = [t('trendChart.pos1'), t('trendChart.pos2'), t('trendChart.pos3'), t('trendChart.pos4'), t('trendChart.pos5'), t('trendChart.back1'), t('trendChart.back2')]
+  const POSITION_LABELS: Record<string, string> = {
+    pos1: t('trendChart.pos1'),
+    pos2: t('trendChart.pos2'),
+    pos3: t('trendChart.pos3'),
+    pos4: t('trendChart.pos4'),
+    pos5: t('trendChart.pos5'),
+    pos6: t('trendChart.back1'),
+    pos7: t('trendChart.back2'),
+  }
   const [zone, setZone] = useState<'front' | 'back'>('front')
   const [filterMode, setFilterMode] = useState<FilterMode>('none')
   const [limitInput, setLimitInput] = useState('50')
@@ -226,7 +235,7 @@ export function TrendChart({ data }: Props) {
         <FilterTab $active={filterMode === 'range'} onClick={() => setFilterMode('range')}>{t('trendChart.seasonRange')}</FilterTab>
         {filterMode === 'limit' && (
           <>
-            <FilterInput type="number" min={1} value={limitInput} onChange={e => setLimitInput(e.target.value)} />
+            <FilterInput type="number" min={1} value={limitInput} onChange={e => setLimitInput(e.target.value)} aria-label={t('trendChart.recentN')} />
             <span style={{fontSize: 12, color: 'var(--color-text-tertiary)'}}>{t('trendChart.draws')}</span>
           </>
         )}
@@ -252,7 +261,7 @@ export function TrendChart({ data }: Props) {
               type="monotone"
               dataKey={pos}
               stroke={COLORS[i]}
-              name={LABELS[+pos.slice(3) - 1]}
+              name={POSITION_LABELS[pos]}
               dot={false}
               strokeWidth={1.5}
             />
